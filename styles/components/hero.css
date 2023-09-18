@@ -30,42 +30,44 @@
 
 .hero__description {
     max-width: 60ch;
-    font-size: var(--size-sm);
+    font-size: var(--size-base);
     color: var(--clr-slate800);
     font-weight: 500;
 }
 
-.hero_btn {
-    text-transform: capitalize;
-    font-size: var(--size-sm);
+.hero__btn {
+    font-size: var(--size-base);
+    width: auto;
+    height: auto;
 }
 
 /* sm */
 @media (min-width: 475px) {
-.hero {
-    gap: 1.5rem;    
-}
+    .hero {
+        gap: 1.5rem;    
+    }
 
-.hero__img {
-    width: 6.5rem;
-    height: 6.5rem;
-}
+    .hero__img {
+        width: 6.5rem;
+        height: 6.5rem;
+    }
 
-.hero__subtitle {    
-    font-size: var(--size-lg);
-}
+    .hero__subtitle {    
+        font-size: var(--size-lg);
+    }
 
-.hero__title {    
-    font-size: var(--size-5xl);
-}
+    .hero__title {    
+        font-size: var(--size-5xl);
+    }
 
-.hero__description {
-    font-size: var(--size-base);
-}
-
-.hero_btn {    
-    font-size: var(--size-base);
-  }
+    .hero__description {
+        font-size: var(--size-xl);
+    }
+    .hero__btn {
+        font-size: var(--size-xl);
+        width: auto;
+        height: auto;
+    }
 }
 
 /* lg */
@@ -84,12 +86,13 @@
     }
     
     .hero__description {
-        font-size: var(--size-lg);
+        font-size: var(--size-2xl);
     }
-    
-    .hero_btn {    
-        font-size: var(--size-lg);
-  }
+    .hero__btn {
+        font-size: var(--size-2xl);
+        width: auto;
+        height: auto;
+    }
 }
 
 /* xl */
@@ -112,13 +115,41 @@
     }
     
     .hero__description {
-        font-size: var(--size-xl);
+        font-size: var(--size-3xl);
     }
-    
-    .hero_btn {    
-        font-size: var(--size-xl);
-  }
+    .hero__btn {
+        font-size: var(--size-3xl);
+        width: auto;
+        height: auto;
+    }
 }
 
 /* 2xl */
-/* @media (min-width: 1536px) {} */
+@media (min-width: 1536px) {
+    .hero {
+        gap: 2rem; 
+     }
+     
+     .hero__img {
+         width: 10rem;
+         height: 10rem;
+     }
+     
+     .hero__subtitle {    
+         font-size: var(--size-4xl);
+     }
+     
+     .hero__title {    
+         font-size: var(--size-9xl);
+     }
+     
+     .hero__description {
+         font-size: var(--size-3xl);
+     }
+     .hero__btn {
+         font-size: var(--size-4xl);
+         width: auto;
+         height: auto;
+     }
+ }
+}

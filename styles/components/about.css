@@ -47,6 +47,7 @@
 .about__li {
     font-size: var(--size-sm); 
     color: var(--clr-slate800);
+    margin-left: 0.5rem;
 
 }
 .about__li::before {

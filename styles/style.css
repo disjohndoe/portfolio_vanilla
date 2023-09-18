@@ -9,6 +9,24 @@
 
 /* sizes */
 
+/* xs */
+/* @media (min-width: 475px) {} */
+
+/* sm */
+/* @media (min-width: 640px) {} */
+
+/* md */
+/* @media (min-width: 768px) {} */
+
+/* lg */
+/* @media (min-width: 1024px) {} */
+
+/* xl */
+/* @media (min-width: 1280px) {} */
+
+/* 2xl */
+/* @media (min-width: 1536px) {} */
+
 --size-xxs: 0.5rem;
 --size-xs: 0.75rem;
 --size-sm: 0.875rem;
@@ -27,10 +45,6 @@
 }
 /* rose rgb(225, 29, 72) */
 /* indigo rgb(79, 70, 229) */
-
-
-
-
 
 * {
     margin: 0;

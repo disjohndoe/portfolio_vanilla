@@ -1,6 +1,6 @@
 :root {
     --clr-dark: #070a13;
-    --clr-light: #f1f5f9;
+    --clr-light: rgb(241, 245, 249);
     --clr-slate400: #94a3b8;
     --clr-slate600: #475569;
     --clr-slate800: #4b7dce;

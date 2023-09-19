@@ -16,11 +16,6 @@
  height: var(--size-2xl);
  display: block;
 }
-/* xs
-@media (min-width: 475px) {}
-
-/* sm */
-/* @media (min-width: 600px) {} */
 
 /* md */
 
@@ -62,12 +57,12 @@
     display: none;
  }
 }
+
 /* lg */
 @media (min-width: 1024px) {
 .header__link {
     font-size: var(--size-sm);
 }
-
 
 .header__sun {
     width: var(--size-xl);
@@ -78,11 +73,3 @@
     font-size: var(--size-sm);
  }
 }
-/* xl */
-/* @media (min-width: 1280px) {
-    
-} */
-/* 2xl */
-/* @media (min-width: 1536px) {
-
-} */

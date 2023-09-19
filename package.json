@@ -1,12 +1,12 @@
 {
   "name": "my-portfolio",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite dev",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview"    
   },
   "devDependencies": {
     "vite": "^4.4.5"

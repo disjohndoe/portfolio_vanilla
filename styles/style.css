@@ -55,6 +55,14 @@ html {
     scroll-behavior: smooth;    
 }
 
+.light-mode {
+    --clr-light: #070a13;
+    --clr-dark: rgb(241, 245, 249);
+    --clr-slate400: #4b7dce;
+    --clr-slate600: #4b7dce;
+    --clr-slate800: #4b7dce;
+}
+
 body {
     font-family: 'General Sans', sans-serif;
     background-color: var(--clr-dark);
@@ -86,3 +94,19 @@ a {
 strong {
     color: rgb(89, 153, 255);
 }
+
+/* Scrollbar */
+
+
+body::-webkit-scrollbar {
+    width: 1em;
+  }
+   
+  body::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+   
+  body::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+  }

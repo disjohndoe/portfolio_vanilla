@@ -41,6 +41,18 @@
     height: auto;
 }
 
+.hero__git {
+    background-color: white;
+    width: 12%;
+    height: 12%;
+    border-radius: 100%;
+    transition: box-shadow 0.3s;  
+}
+
+.hero__git:hover {    
+    box-shadow: 0 0 30px rgba(255, 255, 0, 0.75);    
+}
+
 /* sm */
 @media (min-width: 475px) {
     .hero {
@@ -68,6 +80,10 @@
         width: auto;
         height: auto;
     }
+    .hero__git {        
+        width: 10%;
+        height: 10%;        
+    }
 }
 
 /* lg */
@@ -92,6 +108,10 @@
         font-size: var(--size-2xl);
         width: auto;
         height: auto;
+    }
+    .hero__git {        
+        width: 9%;
+        height: 9%;    
     }
 }
 
@@ -122,6 +142,7 @@
         width: auto;
         height: auto;
     }
+
 }
 
 /* 2xl */
@@ -151,4 +172,5 @@
          width: auto;
          height: auto;
      }
+
  }

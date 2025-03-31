@@ -8,18 +8,54 @@ import '../styles/components/work.css';
 import '../styles/components/contact.css';
 import '../styles/components/footer.css';
 import '../styles/components/mobile-nav.css';
+import '../styles/components/three-effects.css';
 import '../styles/utils.css';
 
 import mobileNav from './utils/mobile-nav';
 import darkMode from './utils/dark-mode';
 import lazyLoading from './utils/lazy-loading';
 import animations from './utils/animations';
+import threeBackground from './utils/three-background';
+import skillsGlobe from './utils/skills-globe';
+import projectModel from './utils/project-model';
+import particleCursor from './utils/particle-cursor';
 
 // Initialize components
 mobileNav();
 darkMode();
 lazyLoading();
 animations();
+
+// Initialize 3D effects
+// Check if browser supports WebGL
+if (window.WebGLRenderingContext) {
+  // Create a temporary canvas to check WebGL support
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  
+  if (gl) {
+    // Load Three.js dynamically
+    import('three').then(() => {
+      console.log('Three.js loaded successfully');
+      
+      // Add a small delay to ensure DOM is fully loaded
+      setTimeout(() => {
+        threeBackground();
+        skillsGlobe();
+        projectModel();
+      }, 500);
+    }).catch(error => {
+      console.error('Failed to load Three.js:', error);
+    });
+  } else {
+    console.warn('WebGL not supported, 3D effects disabled');
+  }
+} else {
+  console.warn('WebGL not supported, 3D effects disabled');
+}
+
+// Add particle cursor
+particleCursor();
 
 // Add smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

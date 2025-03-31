@@ -1,0 +1,79 @@
+/* Three.js canvas styling */
+.three-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Skills globe styling */
+.skills-globe {
+  width: 100%;
+  height: 400px;
+  margin: var(--spacing-lg) 0;
+  border-radius: var(--radius-lg);
+  background-color: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Project model containers */
+.project-model-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.project-model {
+  width: 100%;
+  height: 100%;
+}
+
+/* Styles for interactive elements */
+.work-card:hover .project-model-container {
+  opacity: 1;
+}
+
+/* Make skills container in dark mode more visible */
+.light-mode .skills-globe {
+  background-color: rgba(200, 200, 255, 0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .skills-globe {
+    height: 300px;
+  }
+}
+
+/* Loading animation for Three.js elements */
+.three-loading {
+  position: relative;
+}
+
+.three-loading::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  margin-left: -20px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--clr-primary);
+  animation: spin 1s linear infinite;
+  z-index: 1;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

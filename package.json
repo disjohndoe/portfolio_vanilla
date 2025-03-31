@@ -1,14 +1,17 @@
 {
-  "name": "my-portfolio",
-  "private": false,
+  "name": "portfolio_vanilla",
+  "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"    
+    "preview": "vite preview"
   },
   "devDependencies": {
     "vite": "^4.4.5"
+  },
+  "dependencies": {
+    "three": "^0.157.0"
   }
 }

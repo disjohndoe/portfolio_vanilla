@@ -18,7 +18,7 @@ import animations from './utils/animations';
 import threeBackground from './utils/three-background';
 import skillsGlobe from './utils/skills-globe';
 import projectModel from './utils/project-model';
-import particleCursor from './utils/particle-cursor';
+import fireCursor from './utils/fire-cursor';
 
 // Initialize components
 mobileNav();
@@ -54,8 +54,8 @@ if (window.WebGLRenderingContext) {
   console.warn('WebGL not supported, 3D effects disabled');
 }
 
-// Add particle cursor
-particleCursor();
+// Add fire cursor effect
+fireCursor();
 
 // Add smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

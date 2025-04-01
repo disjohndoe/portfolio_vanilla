@@ -23,6 +23,7 @@ import threeBackground from './utils/three-background';
 import skillsGlobe from './utils/skills-globe';
 import projectModel from './utils/project-model';
 import positionSkillsPanel from './utils/position-skills-panel';
+import ensureGlobeVisible from './utils/ensure-globe-visible';
 
 // Initialize basic components first
 mobileNav();
@@ -38,6 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
     cursorContainer.remove();
   }
 });
+
+// Run the ensure-globe-visible utility for fallback rendering
+ensureGlobeVisible();
 
 // THREE.js components initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -55,11 +59,28 @@ document.addEventListener('DOMContentLoaded', () => {
         
         setTimeout(() => {
           try {
-          skillsGlobe();
-          console.log('Skills globe initialized');
+            skillsGlobe();
+            console.log('Skills globe initialized');
             
             // Position the skills panel after globe initialization
             positionSkillsPanel();
+            
+            // Add a fallback check - if globe isn't visible, force it
+            setTimeout(() => {
+              const globe = document.querySelector('.skills-globe');
+              if (globe && (globe.offsetHeight === 0 || !globe.offsetParent)) {
+                console.warn('Globe not visible, forcing fallback');
+                const container = document.querySelector('.globe-container');
+                if (container) {
+                  // Create a simple fallback
+                  const fallback = document.createElement('div');
+                  fallback.className = 'globe-fallback';
+                  fallback.innerHTML = 'Interactive 3D Skills Globe';
+                  fallback.style.display = 'block';
+                  container.appendChild(fallback);
+                }
+              }
+            }, 1000);
             
             // Project model initialization disabled to remove hover effects
             // setTimeout(() => {
@@ -72,6 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // }, 200);
           } catch (e) {
             console.error('Skills globe error:', e);
+            const container = document.querySelector('.globe-container');
+            if (container) {
+              // Create error fallback
+              const fallback = document.createElement('div');
+              fallback.className = 'globe-fallback';
+              fallback.innerHTML = 'Interactive 3D Skills Globe';
+              fallback.style.display = 'block';
+              container.appendChild(fallback);
+            }
           }
         }, 200);
       } catch (e) {

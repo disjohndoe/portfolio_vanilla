@@ -11,11 +11,15 @@ import '../styles/components/mobile-nav.css';
 import '../styles/components/three-effects.css';
 import '../styles/utils.css';
 
+// Import utilities
 import mobileNav from './utils/mobile-nav';
 import darkMode from './utils/dark-mode';
 import lazyLoading from './utils/lazy-loading';
 import animations from './utils/animations';
 import fireCursor from './utils/fire-cursor';
+import threeBackground from './utils/three-background';
+import skillsGlobe from './utils/skills-globe';
+import projectModel from './utils/project-model';
 
 // Initialize basic components first
 mobileNav();
@@ -24,39 +28,46 @@ lazyLoading();
 animations();
 fireCursor();
 
-// Load Three.js effects
-let threeJsLoaded = false;
-const loadThreeJs = async () => {
-  try {
-    // Import Three.js and the visualization components
-    const Three = await import('three');
-    window.THREE = Three; // Make THREE globally available
+// THREE.js components initialization
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM loaded, checking for THREE...');
+  
+  // Check if THREE is available from the CDN
+  if (window.THREE) {
+    console.log('THREE is available, initializing components');
     
-    console.log('Three.js loaded successfully');
-    
-    // Import our three.js components
-    const threeBackgroundModule = await import('./utils/three-background.js');
-    const skillsGlobeModule = await import('./utils/skills-globe.js');
-    const projectModelModule = await import('./utils/project-model.js');
-    
-    // Initialize components with a small delay
+    // Initialize THREE components
     setTimeout(() => {
       try {
-        threeBackgroundModule.default();
-        skillsGlobeModule.default();
-        projectModelModule.default();
-        threeJsLoaded = true;
-        console.log('Three.js components initialized');
-      } catch (error) {
-        console.error('Error initializing Three.js components:', error);
-        showThreeJsError();
+        threeBackground();
+        console.log('Background initialized');
+        
+        setTimeout(() => {
+          try {
+            skillsGlobe();
+            console.log('Skills globe initialized');
+            
+            setTimeout(() => {
+              try {
+                projectModel();
+                console.log('Project model initialized');
+              } catch (e) {
+                console.error('Project model error:', e);
+              }
+            }, 200);
+          } catch (e) {
+            console.error('Skills globe error:', e);
+          }
+        }, 200);
+      } catch (e) {
+        console.error('Three background error:', e);
       }
-    }, 1000);
-  } catch (error) {
-    console.error('Failed to load Three.js:', error);
+    }, 500);
+  } else {
+    console.error('THREE is not available from CDN');
     showThreeJsError();
   }
-};
+});
 
 // Function to show an error message when Three.js fails
 const showThreeJsError = () => {
@@ -74,32 +85,6 @@ const showThreeJsError = () => {
     skillsContainer.parentNode.insertBefore(errorMsg, skillsContainer.nextSibling);
   }
 };
-
-// Check if browser supports WebGL and load Three.js
-if (window.WebGLRenderingContext) {
-  // Create a temporary canvas to check WebGL support
-  const canvas = document.createElement('canvas');
-  let gl;
-  
-  try {
-    // Try to get WebGL context
-    gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    
-    if (gl) {
-      // WebGL is supported, load Three.js
-      loadThreeJs();
-    } else {
-      console.warn('WebGL context failed, 3D effects disabled');
-      showThreeJsError();
-    }
-  } catch (e) {
-    console.error('Error checking WebGL support:', e);
-    showThreeJsError();
-  }
-} else {
-  console.warn('WebGL not supported, 3D effects disabled');
-  showThreeJsError();
-}
 
 // Add smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

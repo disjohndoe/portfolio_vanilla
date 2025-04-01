@@ -17,49 +17,7 @@ const skillsGlobe = () => {
   const skillsContainer = document.querySelector('.skills-container');
   if (!skillsContainer) return;
   
-  // Replace the skills container with our canvas
-  skillsContainer.style.display = 'none';
-  skillsContainer.parentNode.insertBefore(canvas, skillsContainer.nextSibling);
-  
-  // Add loading indicator
-  const loadingIndicator = document.createElement('div');
-  loadingIndicator.className = 'three-loading';
-  canvas.appendChild(loadingIndicator);
-  
-  // Create container for skill labels
-  const labelsContainer = document.createElement('div');
-  labelsContainer.className = 'skill-labels-container';
-  labelsContainer.style.position = 'absolute';
-  labelsContainer.style.top = '0';
-  labelsContainer.style.left = '0';
-  labelsContainer.style.width = '100%';
-  labelsContainer.style.height = '100%';
-  labelsContainer.style.pointerEvents = 'none';
-  canvas.appendChild(labelsContainer);
-  
-  // Add styles for labels if not already in CSS
-  const style = document.createElement('style');
-  style.textContent = `
-    .skill-label {
-      position: absolute;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      pointer-events: none;
-      white-space: nowrap;
-      transition: transform 0.2s ease;
-    }
-    .skill-label.focused {
-      background-color: rgba(255, 50, 50, 0.9);
-      font-weight: bold;
-      transform: scale(1.2);
-    }
-  `;
-  document.head.appendChild(style);
-  
-  // Get skills data from the DOM
+  // Get skills data from the DOM before replacing
   const skillsData = [];
   document.querySelectorAll('.skill-badge').forEach(badge => {
     // Extract the skill name and icon
@@ -72,14 +30,148 @@ const skillsGlobe = () => {
     });
   });
   
+  // Create a container div that will hold both the canvas and skills panel
+  const globeContainer = document.createElement('div');
+  globeContainer.className = 'globe-container';
+  globeContainer.style.position = 'relative';
+  globeContainer.style.width = '100%';
+  globeContainer.style.height = '500px';
+  globeContainer.style.borderRadius = 'var(--radius-lg)';
+  globeContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+  globeContainer.style.overflow = 'hidden';
+  globeContainer.style.boxShadow = '0 0 30px rgba(67, 97, 238, 0.1)';
+  globeContainer.style.marginTop = 'var(--spacing-lg)';
+  globeContainer.style.marginBottom = 'var(--spacing-lg)';
+  
+  // Add the canvas to the container
+  globeContainer.appendChild(canvas);
+  
+  // Replace the skills container with our container
+  skillsContainer.style.display = 'none';
+  skillsContainer.parentNode.insertBefore(globeContainer, skillsContainer.nextSibling);
+  
+  // Create a skills info display that shows the original skill badges
+  const skillsInfo = document.createElement('div');
+  skillsInfo.className = 'skills-info-display';
+  skillsInfo.style.position = 'absolute';
+  skillsInfo.style.top = '15px';
+  skillsInfo.style.right = '15px';
+  skillsInfo.style.width = '180px';
+  skillsInfo.style.background = 'rgba(0,0,0,0.8)';
+  skillsInfo.style.color = 'white';
+  skillsInfo.style.padding = '15px';
+  skillsInfo.style.borderRadius = '10px';
+  skillsInfo.style.zIndex = '1000';
+  skillsInfo.style.boxShadow = '0 0 15px rgba(0,100,255,0.5)';
+  skillsInfo.style.border = '1px solid rgba(0,150,255,0.5)';
+  skillsInfo.style.maxHeight = '80%';
+  skillsInfo.style.overflowY = 'auto';
+  globeContainer.appendChild(skillsInfo);
+  
+  // Add a title to the info panel
+  const infoTitle = document.createElement('div');
+  infoTitle.textContent = 'My Skills';
+  infoTitle.style.textAlign = 'center';
+  infoTitle.style.fontWeight = 'bold';
+  infoTitle.style.fontSize = '16px';
+  infoTitle.style.marginBottom = '10px';
+  infoTitle.style.borderBottom = '1px solid rgba(255,255,255,0.3)';
+  infoTitle.style.paddingBottom = '5px';
+  skillsInfo.appendChild(infoTitle);
+  
+  // Add a description
+  const infoDesc = document.createElement('div');
+  infoDesc.textContent = 'Click on a sphere to highlight a skill:';
+  infoDesc.style.fontSize = '12px';
+  infoDesc.style.marginBottom = '10px';
+  infoDesc.style.opacity = '0.8';
+  skillsInfo.appendChild(infoDesc);
+  
+  // Add a container for the skill items
+  const skillsList = document.createElement('div');
+  skillsList.className = 'skills-list';
+  skillsInfo.appendChild(skillsList);
+  
+  // Add skill items to the info panel
+  skillsData.forEach((skill, index) => {
+    const skillItem = document.createElement('div');
+    skillItem.className = 'skill-item';
+    skillItem.dataset.index = index;
+    skillItem.textContent = skill.name;
+    skillItem.style.padding = '6px 10px';
+    skillItem.style.margin = '5px 0';
+    skillItem.style.borderRadius = '5px';
+    skillItem.style.transition = 'all 0.2s ease';
+    skillItem.style.cursor = 'pointer';
+    skillItem.style.backgroundColor = 'rgba(0,0,0,0.3)';
+    
+    // Highlight on hover
+    skillItem.addEventListener('mouseover', () => {
+      skillItem.style.backgroundColor = 'rgba(255,153,0,0.3)';
+    });
+    
+    skillItem.addEventListener('mouseout', () => {
+      if (skillItem.dataset.selected !== 'true') {
+        skillItem.style.backgroundColor = 'rgba(0,0,0,0.3)';
+      }
+    });
+    
+    skillsList.appendChild(skillItem);
+  });
+  
+  // Add loading indicator
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.className = 'three-loading';
+  canvas.appendChild(loadingIndicator);
+  
+  // Add a popup for focused skill
+  const focusedSkillPopup = document.createElement('div');
+  focusedSkillPopup.className = 'focused-skill-popup';
+  focusedSkillPopup.style.position = 'absolute';
+  focusedSkillPopup.style.display = 'none';
+  focusedSkillPopup.style.padding = '8px 15px';
+  focusedSkillPopup.style.backgroundColor = 'rgba(255,0,0,0.8)';
+  focusedSkillPopup.style.color = 'white';
+  focusedSkillPopup.style.fontWeight = 'bold';
+  focusedSkillPopup.style.borderRadius = '5px';
+  focusedSkillPopup.style.zIndex = '1001';
+  focusedSkillPopup.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+  focusedSkillPopup.style.transform = 'translate(-50%, -100%)';
+  focusedSkillPopup.style.pointerEvents = 'none';
+  focusedSkillPopup.style.fontSize = '16px';
+  focusedSkillPopup.style.letterSpacing = '0.5px';
+  canvas.appendChild(focusedSkillPopup);
+  
+  // Add instructions
+  const instructions = document.createElement('div');
+  instructions.className = 'globe-instructions';
+  instructions.style.position = 'absolute';
+  instructions.style.bottom = '15px';
+  instructions.style.left = '15px';
+  instructions.style.padding = '5px 12px';
+  instructions.style.backgroundColor = 'rgba(0,0,0,0.6)';
+  instructions.style.color = 'rgba(255,255,255,0.7)';
+  instructions.style.borderRadius = '15px';
+  instructions.style.fontSize = '12px';
+  instructions.style.pointerEvents = 'none';
+  instructions.innerHTML = 'Move mouse to rotate • Click skills to focus';
+  globeContainer.appendChild(instructions);
+  
   // Setup Three.js scene
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
   camera.position.z = 5;
   
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
+  
+  // Set canvas to fill its container
+  canvas.style.position = 'absolute';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
   
   // Create a sphere for the globe
   const globeGeometry = new THREE.SphereGeometry(2, 32, 32);
@@ -94,11 +186,11 @@ const skillsGlobe = () => {
   
   // Create particles for each skill
   const particles = [];
-  const skillLabels = [];
+  const skillItems = skillsInfo.querySelectorAll('.skill-item');
   
   skillsData.forEach((skill, index) => {
     // Create a sphere for the skill
-    const geometry = new THREE.SphereGeometry(0.15, 16, 16); // Slightly larger
+    const geometry = new THREE.SphereGeometry(0.25, 16, 16); // Even larger particle
     const material = new THREE.MeshBasicMaterial({ color: 0x00aaff });
     const particle = new THREE.Mesh(geometry, material);
     
@@ -118,14 +210,6 @@ const skillsGlobe = () => {
     };
     particles.push(particle);
     scene.add(particle);
-    
-    // Create a label for the skill
-    const skillLabel = document.createElement('div');
-    skillLabel.className = 'skill-label';
-    skillLabel.textContent = skill.name;
-    skillLabel.style.display = 'block'; // Always visible
-    labelsContainer.appendChild(skillLabel);
-    skillLabels.push(skillLabel);
   });
   
   // Add raycaster for interaction
@@ -134,7 +218,6 @@ const skillsGlobe = () => {
   
   // Track focused skill
   let focusedSkill = null;
-  let focusedLabelIndex = -1;
   
   // Handle mouse movement 
   canvas.addEventListener('mousemove', (event) => {
@@ -155,6 +238,11 @@ const skillsGlobe = () => {
         particle.material.color.set(0x00aaff);
         particle.scale.set(1, 1, 1);
       }
+      
+      // Reset list item highlight if not focused
+      if (skillItems[index] && !skillItems[index].dataset.selected) {
+        skillItems[index].style.backgroundColor = 'rgba(0,0,0,0.3)';
+      }
     });
     
     // Handle intersection for hover effect
@@ -166,6 +254,11 @@ const skillsGlobe = () => {
         // Highlight the particle on hover
         intersection.object.material.color.set(0xff9900);
         intersection.object.scale.set(1.5, 1.5, 1.5);
+        
+        // Also highlight the corresponding skill in the list
+        if (skillItems[particleIndex]) {
+          skillItems[particleIndex].style.backgroundColor = 'rgba(255,153,0,0.3)';
+        }
       }
     }
   });
@@ -188,95 +281,198 @@ const skillsGlobe = () => {
       const particleIndex = particles.indexOf(clickedParticle);
       
       // If we already had a focused skill, unfocus it
-      if (focusedSkill && focusedLabelIndex !== -1) {
+      if (focusedSkill) {
         // Reset previous focus
         focusedSkill.material.color.set(0x00aaff);
         focusedSkill.scale.set(1, 1, 1);
-        skillLabels[focusedLabelIndex].classList.remove('focused');
-        focusedSkill = null;
-        focusedLabelIndex = -1;
+        
+        // Reset the previous list item
+        const prevIndex = particles.indexOf(focusedSkill);
+        if (prevIndex >= 0 && skillItems[prevIndex]) {
+          skillItems[prevIndex].style.backgroundColor = 'rgba(0,0,0,0.3)';
+          skillItems[prevIndex].style.fontWeight = 'normal';
+          skillItems[prevIndex].dataset.selected = 'false';
+        }
+        
+        // If clicking the same particle, just unfocus
+        if (clickedParticle === focusedSkill) {
+          focusedSkill = null;
+          focusedSkillPopup.style.display = 'none';
+          return;
+        }
       }
       
-      // If we clicked a different skill, focus it
-      if (clickedParticle !== focusedSkill) {
-        focusedSkill = clickedParticle;
-        focusedLabelIndex = particleIndex;
-        focusedSkill.material.color.set(0xff0000);
-        focusedSkill.scale.set(2, 2, 2);
-        skillLabels[focusedLabelIndex].classList.add('focused');
+      // Focus the clicked skill
+      focusedSkill = clickedParticle;
+      focusedSkill.material.color.set(0xff0000);
+      focusedSkill.scale.set(2, 2, 2);
+      
+      // Update the popup
+      focusedSkillPopup.textContent = focusedSkill.userData.skill;
+      focusedSkillPopup.style.display = 'block';
+      
+      // Position the popup above the particle
+      const vector = new THREE.Vector3();
+      vector.copy(focusedSkill.position);
+      vector.project(camera);
+      
+      const x = (vector.x * 0.5 + 0.5) * canvas.clientWidth;
+      const y = (-vector.y * 0.5 + 0.5) * canvas.clientHeight;
+      
+      focusedSkillPopup.style.left = `${x}px`;
+      focusedSkillPopup.style.top = `${y - 20}px`;
+      
+      // Highlight the list item
+      if (skillItems[particleIndex]) {
+        skillItems[particleIndex].style.backgroundColor = 'rgba(255,0,0,0.3)';
+        skillItems[particleIndex].style.fontWeight = 'bold';
+        skillItems[particleIndex].dataset.selected = 'true';
+        
+        // Scroll to the item if needed
+        skillItems[particleIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     } else {
       // Clicked outside any skill, clear focus
-      if (focusedSkill && focusedLabelIndex !== -1) {
+      if (focusedSkill) {
         focusedSkill.material.color.set(0x00aaff);
         focusedSkill.scale.set(1, 1, 1);
-        skillLabels[focusedLabelIndex].classList.remove('focused');
+        
+        // Reset the list item
+        const prevIndex = particles.indexOf(focusedSkill);
+        if (prevIndex >= 0 && skillItems[prevIndex]) {
+          skillItems[prevIndex].style.backgroundColor = 'rgba(0,0,0,0.3)';
+          skillItems[prevIndex].style.fontWeight = 'normal';
+          skillItems[prevIndex].dataset.selected = 'false';
+        }
+        
         focusedSkill = null;
-        focusedLabelIndex = -1;
+        focusedSkillPopup.style.display = 'none';
       }
     }
   });
   
-  // Update label positions based on particle positions
-  const updateLabelPositions = () => {
-    const canvas_rect = canvas.getBoundingClientRect();
-    const canvas_width = canvas_rect.width;
-    const canvas_height = canvas_rect.height;
-    
-    particles.forEach((particle, index) => {
-      const skillLabel = skillLabels[index];
-      
-      // Get the screen position of the particle
+  // Update popup position when the focused skill moves
+  const updatePopupPosition = () => {
+    if (focusedSkill && focusedSkillPopup.style.display !== 'none') {
       const vector = new THREE.Vector3();
-      vector.copy(particle.position);
+      vector.copy(focusedSkill.position);
       vector.project(camera);
       
-      // Convert to screen coordinates
-      const x = (vector.x * 0.5 + 0.5) * canvas_width;
-      const y = (-vector.y * 0.5 + 0.5) * canvas_height;
+      const x = (vector.x * 0.5 + 0.5) * canvas.clientWidth;
+      const y = (-vector.y * 0.5 + 0.5) * canvas.clientHeight;
       
-      // Only show labels for particles that are in front of the globe (z > 0)
-      if (particle.position.z > 0) {
-        skillLabel.style.display = 'block';
-        skillLabel.style.left = `${x}px`;
-        skillLabel.style.top = `${y}px`;
-        
-        // Add depth effect - particles further back are more transparent
-        const opacity = 0.7 + 0.3 * (particle.position.z / 2);
-        skillLabel.style.opacity = opacity.toString();
+      // Only show popup for particles in front of the globe
+      if (focusedSkill.position.z > 0) {
+        focusedSkillPopup.style.display = 'block';
+        focusedSkillPopup.style.left = `${x}px`;
+        focusedSkillPopup.style.top = `${y - 20}px`;
       } else {
-        // Hide labels for particles behind the globe
-        skillLabel.style.display = 'none';
+        focusedSkillPopup.style.display = 'none';
       }
-    });
+    }
   };
+  
+  // Make the globe rotate on mouse movement
+  let targetRotationY = 0;
+  let targetRotationX = 0;
+  let currentRotationY = 0;
+  let currentRotationX = 0;
+  
+  canvas.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Calculate normalized mouse position relative to center (-1 to 1)
+    const mouseX = (event.clientX - rect.left - centerX) / centerX;
+    const mouseY = (event.clientY - rect.top - centerY) / centerY;
+    
+    // Set target rotation based on mouse position
+    targetRotationY = mouseX * 0.5;
+    targetRotationX = mouseY * 0.3;
+  });
+  
+  // Link skill items in the info panel to the particles
+  skillItems.forEach((item, index) => {
+    item.addEventListener('click', () => {
+      // Reset all particles and list items
+      particles.forEach((p, i) => {
+        p.material.color.set(0x00aaff);
+        p.scale.set(1, 1, 1);
+        
+        if (skillItems[i]) {
+          skillItems[i].style.backgroundColor = 'rgba(0,0,0,0.3)';
+          skillItems[i].style.fontWeight = 'normal';
+          skillItems[i].dataset.selected = 'false';
+        }
+      });
+      
+      // If we had a focused skill and clicked the same item, unfocus
+      if (focusedSkill && particles.indexOf(focusedSkill) === index) {
+        focusedSkill = null;
+        focusedSkillPopup.style.display = 'none';
+        return;
+      }
+      
+      // Focus the corresponding particle
+      focusedSkill = particles[index];
+      focusedSkill.material.color.set(0xff0000);
+      focusedSkill.scale.set(2, 2, 2);
+      
+      // Highlight the list item
+      item.style.backgroundColor = 'rgba(255,0,0,0.3)';
+      item.style.fontWeight = 'bold';
+      item.dataset.selected = 'true';
+      
+      // Update the popup
+      focusedSkillPopup.textContent = focusedSkill.userData.skill;
+      focusedSkillPopup.style.display = 'block';
+      
+      // Position the popup (will be updated in animation loop)
+      updatePopupPosition();
+    });
+  });
   
   // Animation loop
   const animate = () => {
     requestAnimationFrame(animate);
     
-    // Rotate the globe
-    globe.rotation.y += 0.002;
+    // Smooth rotation
+    currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+    currentRotationX += (targetRotationX - currentRotationX) * 0.05;
+    
+    // Apply rotation to globe
+    globe.rotation.y = currentRotationY;
+    globe.rotation.x = currentRotationX;
     
     // Update particles positioning on globe
-    particles.forEach((particle, index) => {
+    particles.forEach((particle) => {
       // Only update particles that aren't focused
       if (particle !== focusedSkill) {
         // Get the original angles
         const phi = particle.userData.phi;
         const theta = particle.userData.theta;
         
-        // Rotate around Y axis
-        const x = 2 * Math.cos(theta + globe.rotation.y) * Math.sin(phi);
-        const z = 2 * Math.cos(phi);
-        const y = 2 * Math.sin(theta + globe.rotation.y) * Math.sin(phi);
+        // Rotate around axes
+        const rotatedTheta = theta + globe.rotation.y;
         
-        particle.position.set(x, y, z);
+        // Calculate new position based on sphere coordinates
+        const x = 2 * Math.cos(rotatedTheta) * Math.sin(phi);
+        const z = 2 * Math.cos(phi);
+        const y = 2 * Math.sin(rotatedTheta) * Math.sin(phi);
+        
+        // Apply X rotation (tilt)
+        const cosX = Math.cos(globe.rotation.x);
+        const sinX = Math.sin(globe.rotation.x);
+        const newY = y * cosX - z * sinX;
+        const newZ = y * sinX + z * cosX;
+        
+        particle.position.set(x, newY, newZ);
       }
     });
     
-    // Update label positions
-    updateLabelPositions();
+    // Update popup position
+    updatePopupPosition();
     
     renderer.render(scene, camera);
     

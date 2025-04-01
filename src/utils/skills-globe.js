@@ -166,9 +166,11 @@ const skillsGlobe = () => {
   const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
   scene.add(sphere);
   
-  // Create orbiting skill rings
+  // Create orbiting skill rings - REMOVE BLUE RING
   const rings = [];
-  const categories = ['frontend', 'backend', 'tools', 'general'];
+  // Modify the categories array to exclude the 'general' category
+  // This will remove the blue ring that corresponds to 'general'
+  const categories = ['frontend', 'backend', 'tools']; // Removed 'general'
   
   categories.forEach((category, idx) => {
     // Filter skills by category
@@ -178,7 +180,9 @@ const skillsGlobe = () => {
     // Create a ring for this category
     const ringGeometry = new THREE.TorusGeometry(3 + idx * 0.5, 0.05, 16, 60);
     
+    // Skip blue color - use category-specific colors
     const color = categorySkills[0].color;
+    
     const ringMaterial = new THREE.MeshPhongMaterial({
       color,
       transparent: true,
@@ -205,15 +209,29 @@ const skillsGlobe = () => {
   skillsData.forEach((skill, index) => {
     // Find which ring this skill belongs to
     const ringIndex = rings.findIndex(ring => ring.category === skill.category);
-    if (ringIndex === -1) return;
     
-    // Calculate position on the ring
-    const angle = (index / skillsData.length) * Math.PI * 2;
-    const ringRadius = 3 + ringIndex * 0.5;
+    // For skills with no matching ring (like 'general' category now),
+    // we'll place them in a different arrangement
+    let x, y, z;
     
-    const x = Math.cos(angle) * ringRadius;
-    const z = Math.sin(angle) * ringRadius;
-    const y = (Math.random() * 0.5 - 0.25) * ringIndex; // Slight vertical variation
+    if (ringIndex === -1) {
+      // Place 'general' skills in a cloud around the sphere
+      const angle = (index / skillsData.length) * Math.PI * 2;
+      const elevation = Math.random() * Math.PI - Math.PI/2;
+      const radius = 3.5;
+      
+      x = radius * Math.cos(elevation) * Math.cos(angle);
+      y = radius * Math.sin(elevation);
+      z = radius * Math.cos(elevation) * Math.sin(angle);
+    } else {
+      // For skills with a category ring, place them on that ring
+      const angle = (index / skillsData.length) * Math.PI * 2;
+      const ringRadius = 3 + ringIndex * 0.5;
+      
+      x = Math.cos(angle) * ringRadius;
+      z = Math.sin(angle) * ringRadius;
+      y = (Math.random() * 0.5 - 0.25) * ringIndex; // Slight vertical variation
+    }
     
     const sprite = createTextSprite(skill);
     sprite.position.set(x, y, z);
@@ -224,8 +242,8 @@ const skillsGlobe = () => {
       initialPosition: new THREE.Vector3(x, y, z),
       category: skill.category,
       ringIndex,
-      angle,
-      orbitSpeed: 0.2 - ringIndex * 0.05,
+      angle: index / skillsData.length * Math.PI * 2,
+      orbitSpeed: ringIndex === -1 ? 0.05 : (0.2 - ringIndex * 0.05),
       orbitOffset: Math.random() * Math.PI * 2
     });
   });
@@ -308,15 +326,25 @@ const skillsGlobe = () => {
       skillSprites.forEach(skillData => {
         const { sprite, angle, orbitSpeed, ringIndex } = skillData;
         
-        // Update position based on orbit
-        const newAngle = angle + elapsedTime * orbitSpeed;
-        const ringRadius = 3 + ringIndex * 0.5;
-        
-        const x = Math.cos(newAngle) * ringRadius;
-        const z = Math.sin(newAngle) * ringRadius;
-        
-        sprite.position.x = x;
-        sprite.position.z = z;
+        // For skills with a ring
+        if (ringIndex !== -1) {
+          // Update position based on orbit
+          const newAngle = angle + elapsedTime * orbitSpeed;
+          const ringRadius = 3 + ringIndex * 0.5;
+          
+          const x = Math.cos(newAngle) * ringRadius;
+          const z = Math.sin(newAngle) * ringRadius;
+          
+          sprite.position.x = x;
+          sprite.position.z = z;
+        } else {
+          // For skills without a ring (general category),
+          // add a gentle floating motion
+          const initialPos = skillData.initialPosition;
+          sprite.position.x = initialPos.x + Math.sin(elapsedTime * 0.2 + angle * 5) * 0.2;
+          sprite.position.y = initialPos.y + Math.sin(elapsedTime * 0.3 + angle * 3) * 0.2;
+          sprite.position.z = initialPos.z + Math.sin(elapsedTime * 0.4 + angle * 4) * 0.2;
+        }
         
         // Make sprites face camera
         sprite.lookAt(camera.position);

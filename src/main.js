@@ -1,4 +1,5 @@
 import '../styles/modern-normalize.css';
+import '../styles/colors.css';
 import '../styles/style.css';
 import '../styles/components/header.css';
 import '../styles/components/hero.css';
@@ -16,7 +17,7 @@ import mobileNav from './utils/mobile-nav';
 import darkMode from './utils/dark-mode';
 import lazyLoading from './utils/lazy-loading';
 import animations from './utils/animations';
-import fireCursor from './utils/fire-cursor';
+// import fireCursor from './utils/fire-cursor';
 import threeBackground from './utils/three-background';
 import skillsGlobe from './utils/skills-globe';
 import projectModel from './utils/project-model';
@@ -26,7 +27,15 @@ mobileNav();
 darkMode();
 lazyLoading();
 animations();
-fireCursor();
+// fireCursor();
+
+// Remove any existing cursor containers
+document.addEventListener('DOMContentLoaded', () => {
+  const cursorContainer = document.querySelector('.cursor-container');
+  if (cursorContainer) {
+    cursorContainer.remove();
+  }
+});
 
 // THREE.js components initialization
 document.addEventListener('DOMContentLoaded', () => {

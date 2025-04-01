@@ -1,15 +1,25 @@
 :root {
-  --clr-primary: #4361ee;
-  --clr-primary-dark: #3a56d4;
-  --clr-secondary: #ff0066;
-  --clr-secondary-light: #ff4d94;
+  /* Global colors from Croatian Football Federation logo */
+  --clr-red: #E30613;    /* Croatian red */
+  --clr-white: #ffffff;  /* White */
+  --clr-blue: #0C4EA2;   /* Croatian blue */
+  --clr-gold: #D4AF37;   /* Gold */
+  --clr-blue-light: #3A78CA; /* Lighter blue for dark mode */
+  --clr-bg: rgba(12, 16, 27, 0.2);     /* Dark theme background with slight transparency */
+  
+  /* Color scheme using Croatian colors */
+  --clr-primary: var(--clr-blue);
+  --clr-primary-dark: #083C82;
+  --clr-secondary: var(--clr-red);
+  --clr-secondary-light: #FF3333;
+  --clr-accent: var(--clr-gold);
   --clr-dark: #070a13;
-  --clr-light: rgb(241, 245, 249);
+  --clr-light: var(--clr-white);
   --clr-slate400: #94a3b8;
   --clr-slate600: #475569;
   --clr-slate800: #1e293b;
   --clr-gradient-1: linear-gradient(90deg, var(--clr-primary), var(--clr-secondary));
-  --clr-gradient-2: linear-gradient(90deg, #00c6ff, #0072ff);
+  --clr-gradient-2: linear-gradient(90deg, var(--clr-blue), var(--clr-gold));
   
   /* Typography */
   --ff-primary: 'Inter', sans-serif;
@@ -73,14 +83,17 @@ html {
   --clr-slate400: #334155;
   --clr-slate600: #1e293b;
   --clr-slate800: #0f172a;
+  --clr-blue: #0C4EA2; /* Keep the Croatian blue in light mode */
+  --clr-bg: rgba(240, 244, 248, 0.6); /* Light theme background */
 }
 
 body {
   font-family: var(--ff-primary);
-  background-color: transparent;
+  background-color: var(--clr-bg);
   color: var(--clr-light);
   line-height: 1.5;
   overflow-x: hidden;
+  cursor: default;
 }
 
 img,
@@ -117,6 +130,36 @@ strong {
   font-weight: 600;
 }
 
+/* Cursor styles */
+a, button, .work-card, .skill-badge {
+  cursor: pointer;
+}
+
+/* Apply global colors to titles */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--clr-primary);
+}
+
+/* Add text shadow for dark mode */
+body:not(.light-mode) h1, 
+body:not(.light-mode) h2, 
+body:not(.light-mode) h3, 
+body:not(.light-mode) h4, 
+body:not(.light-mode) h5, 
+body:not(.light-mode) h6,
+body:not(.light-mode) .work-card__title,
+body:not(.light-mode) strong,
+body:not(.light-mode) .skill-badge i {
+  color: var(--clr-blue-light);
+  text-shadow: 0 0 8px rgba(12, 78, 162, 0.6);
+}
+
+/* Special treatment for links in dark mode */
+body:not(.light-mode) a:not(.btn):not(.social-link) {
+  color: var(--clr-blue-light);
+  text-shadow: 0 0 5px rgba(12, 78, 162, 0.4);
+}
+
 /* Scrollbar */
 body::-webkit-scrollbar {
   width: 0.6rem;
@@ -133,6 +176,15 @@ body::-webkit-scrollbar-thumb {
 
 body::-webkit-scrollbar-thumb:hover {
   background-color: var(--clr-primary-dark);
+}
+
+/* Adjusting visibility for special elements in dark mode */
+body:not(.light-mode) .footer__title {
+  text-shadow: 0 0 10px rgba(12, 78, 162, 0.7);
+}
+
+body:not(.light-mode) .logo {
+  filter: drop-shadow(0 0 5px rgba(12, 78, 162, 0.6));
 }
 
 /* Animations */
@@ -162,7 +214,7 @@ body::-webkit-scrollbar-thumb:hover {
 .logo {
   font-size: var(--size-2xl);
   font-weight: 700;
-  background: var(--clr-gradient-1);
+  background: var(--clr-gradient-2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   padding: var(--spacing-xs);
@@ -201,8 +253,8 @@ body::-webkit-scrollbar-thumb:hover {
 
 /* Tech tags */
 .tech-tag {
-  background-color: rgba(67, 97, 238, 0.15);
-  color: var(--clr-primary);
+  background-color: rgba(212, 175, 55, 0.15);
+  color: var(--clr-gold);
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-full);
   font-size: var(--size-xs);
@@ -226,15 +278,24 @@ body::-webkit-scrollbar-thumb:hover {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--clr-light);
+  background-color: rgba(12, 78, 162, 0.2);
+  color: var(--clr-primary);
   font-size: var(--size-xl);
   transition: all var(--transition-fast);
 }
 
+.light-mode .social-link {
+  background-color: rgba(12, 78, 162, 0.15);
+  color: var(--clr-primary);
+}
+
+.light-mode .footer__link {
+  color: var(--clr-dark);
+}
+
 .social-link:hover {
   background-color: var(--clr-primary);
-  color: white;
+  color: var(--clr-white);
   transform: translateY(-3px);
 }
 
@@ -245,6 +306,8 @@ body::-webkit-scrollbar-thumb:hover {
   overflow: hidden;
   box-shadow: var(--shadow-md);
   margin-bottom: var(--spacing-xl);
+  width: 100%;
+  max-width: 1000px;
 }
 
 .work-card__img-wrapper {
@@ -266,7 +329,7 @@ body::-webkit-scrollbar-thumb:hover {
 .work-card__title {
   font-size: var(--size-xl);
   margin-bottom: var(--spacing-sm);
-  color: var(--clr-light);
+  color: var(--clr-primary);
 }
 
 .work-card__description {
@@ -296,8 +359,11 @@ body::-webkit-scrollbar-thumb:hover {
   align-items: center;
   padding-top: var(--spacing-xl);
   padding-bottom: var(--spacing-xl);
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--clr-bg); /* Use global variable */
   margin-top: var(--spacing-xl);
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .footer__content {
@@ -308,14 +374,18 @@ body::-webkit-scrollbar-thumb:hover {
 .footer__title {
   font-size: var(--size-lg);
   margin-bottom: var(--spacing-xs);
-  background: var(--clr-gradient-1);
+  background: var(--clr-gradient-2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .footer__copyright {
   font-size: var(--size-sm);
-  color: var(--clr-slate400);
+  color: var(--clr-dark);
+}
+
+.light-mode .footer__copyright {
+  color: var(--clr-slate600);
 }
 
 .footer__links {
@@ -324,7 +394,7 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .footer__link {
-  color: var(--clr-slate400);
+  color: var(--clr-dark);
   transition: color var(--transition-fast);
 }
 
@@ -431,4 +501,15 @@ body::-webkit-scrollbar-thumb:hover {
     text-align: left;
     margin-bottom: 0;
   }
+}
+
+/* Add special glow for important elements in dark mode */
+body:not(.light-mode) .work-card__title,
+body:not(.light-mode) .featured__title,
+body:not(.light-mode) .about__title,
+body:not(.light-mode) .contact__title,
+body:not(.light-mode) .work__title,
+body:not(.light-mode) .hero__title {
+  letter-spacing: 0.5px;
+  font-weight: 700;
 }

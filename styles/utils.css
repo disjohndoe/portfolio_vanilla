@@ -9,7 +9,7 @@
   color: white;
   padding: 0.75em 1.5em;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 10px rgba(255, 0, 102, 0.3);
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
@@ -30,7 +30,7 @@
 
 .btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(255, 0, 102, 0.4);
+  box-shadow: 0 8px 15px rgba(255, 0, 0, 0.4);
   color: white;
 }
 
@@ -41,7 +41,7 @@
 /* Work card button styles - no hover effects */
 .work-card__btn.btn:hover {
   transform: none;
-  box-shadow: 0 4px 10px rgba(255, 0, 102, 0.3);
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
 }
 
 .work-card__btn.btn:hover:before {

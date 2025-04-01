@@ -34,7 +34,7 @@
 }
 
 .hero__title {
-  color: var(--clr-light);
+  color: var(--clr-primary);
   font-size: var(--size-4xl);
   letter-spacing: -0.05em;
   line-height: 1.1;
@@ -61,20 +61,26 @@
   font-size: var(--size-base);
 }
 
-.hero__git {
+.hero__social {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-md);
+}
+
+.hero__social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--clr-light);
   font-weight: 500;
   transition: all var(--transition-normal);
 }
 
-.hero__git i {
+.hero__social-link i {
   font-size: var(--size-xl);
 }
 
-.hero__git:hover {
+.hero__social-link:hover {
   color: var(--clr-primary);
   transform: translateY(-3px);
 }
@@ -116,6 +122,10 @@
   .hero__cta {
     align-items: flex-start;
     flex-direction: row;
+  }
+  
+  .hero__social {
+    margin-left: var(--spacing-sm);
   }
 }
 

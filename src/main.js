@@ -10,6 +10,7 @@ import '../styles/components/contact.css';
 import '../styles/components/footer.css';
 import '../styles/components/mobile-nav.css';
 import '../styles/components/three-effects.css';
+import '../styles/components/skills-panel.css';
 import '../styles/utils.css';
 
 // Import utilities
@@ -21,6 +22,7 @@ import animations from './utils/animations';
 import threeBackground from './utils/three-background';
 import skillsGlobe from './utils/skills-globe';
 import projectModel from './utils/project-model';
+import positionSkillsPanel from './utils/position-skills-panel';
 
 // Initialize basic components first
 mobileNav();
@@ -53,8 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         setTimeout(() => {
           try {
-            skillsGlobe();
-            console.log('Skills globe initialized');
+          skillsGlobe();
+          console.log('Skills globe initialized');
+            
+            // Position the skills panel after globe initialization
+            positionSkillsPanel();
             
             // Project model initialization disabled to remove hover effects
             // setTimeout(() => {

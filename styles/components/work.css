@@ -10,16 +10,17 @@
 
 .work__title {
   font-size: var(--size-3xl);
-  color: var(--clr-light);
-  margin-bottom: var(--spacing-md);
+  color: var(--clr-primary); /* Updated to use primary color */
+  margin-bottom: var(--spacing-xl); /* Increased from spacing-md to spacing-xl */
   position: relative;
   display: inline-block;
+  padding-bottom: var(--spacing-xs); /* Added padding to create more space for decoration */
 }
 
 .work__title::after {
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: -15px; /* Adjusted to position the line properly with increased margin */
   left: 50%;
   transform: translateX(-50%);
   width: 60px;
@@ -31,9 +32,13 @@
 .work__description {
   max-width: 70ch;
   font-size: var(--size-base);
-  color: var(--clr-slate400);
-  margin: var(--spacing-lg) auto var(--spacing-xl);
+  color: var(--clr-white); /* Changed to white for dark mode visibility */
+  margin: var(--spacing-xl) auto var(--spacing-xl); /* Increased top margin */
   line-height: 1.6;
+}
+
+.light-mode .work__description {
+  color: var(--clr-slate600);
 }
 
 .work__container {
@@ -51,21 +56,26 @@
 @media (min-width: 768px) {
   .work__title {
     font-size: var(--size-4xl);
+    margin-bottom: calc(var(--spacing-xl) * 1.5); /* Increased title bottom margin */
   }
   
   .work__description {
     font-size: var(--size-lg);
+    margin-top: calc(var(--spacing-xl) * 1.2); /* Increased description top margin */
+    margin-bottom: calc(var(--spacing-xl) * 1.5);
   }
 }
 
 @media (min-width: 1280px) {
   .work__title {
     font-size: var(--size-5xl);
+    margin-bottom: calc(var(--spacing-xl) * 2); /* Double the spacing for large screens */
   }
   
   .work__description {
     font-size: var(--size-xl);
-    margin: var(--spacing-xl) auto var(--spacing-2xl);
+    margin: calc(var(--spacing-xl) * 1.5) auto var(--spacing-3xl);
+    margin-bottom: 4rem; /* Added more margin bottom for large screens */
   }
   
   .work__container {

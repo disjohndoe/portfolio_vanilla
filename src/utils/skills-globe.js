@@ -78,26 +78,43 @@ const skillsGlobe = () => {
   stackingContextWrapper.style.isolation = 'isolate';
   stackingContextWrapper.appendChild(globeContainer);
   
-  // Replace the skills container with our wrapper
-  skillsContainer.parentNode.replaceChild(stackingContextWrapper, skillsContainer);
-  
   // Create a skills info display that shows the original skill badges with categories
   const skillsInfo = document.createElement('div');
   skillsInfo.className = 'skills-info-display';
-  skillsInfo.style.position = 'absolute';
-  skillsInfo.style.top = '15px';
-  skillsInfo.style.right = '15px';
-  skillsInfo.style.width = '200px';
-  skillsInfo.style.background = 'rgba(0,0,0,0.8)';
-  skillsInfo.style.color = 'white';
-  skillsInfo.style.padding = '15px';
-  skillsInfo.style.borderRadius = '10px';
-  skillsInfo.style.zIndex = '102';
-  skillsInfo.style.boxShadow = '0 0 15px rgba(0,100,255,0.5)';
-  skillsInfo.style.border = '1px solid rgba(0,150,255,0.5)';
-  skillsInfo.style.maxHeight = '80%';
-  skillsInfo.style.overflowY = 'auto';
-  globeContainer.appendChild(skillsInfo);
+
+  // Replace the skills container with our globe container
+  skillsContainer.parentNode.replaceChild(stackingContextWrapper, skillsContainer);
+  
+  // Make a direct reference to the about section for better positioning
+  const aboutSection = document.querySelector('.about');
+  const aboutContent = document.querySelector('.about__content');
+  
+  // Create a wrapper div that will hold both the globe container and skills panel
+  const overallWrapper = document.createElement('div');
+  overallWrapper.style.position = 'relative';
+  overallWrapper.style.display = 'flex';
+  overallWrapper.style.justifyContent = 'center';
+  overallWrapper.style.width = '100%';
+  overallWrapper.className = 'globe-skills-wrapper';
+  
+  // Insert the overall wrapper after the stacking context wrapper
+  // This ensures proper DOM structure
+  if (aboutContent) {
+    // Insert the wrapper after the about content
+    aboutSection.insertBefore(overallWrapper, aboutContent.nextSibling);
+    
+    // Move the stacking context wrapper (with the globe) into our new overall wrapper
+    stackingContextWrapper.parentNode.removeChild(stackingContextWrapper);
+    overallWrapper.appendChild(stackingContextWrapper);
+  } else {
+    // Fallback in case we can't find the about content
+    skillsContainer.parentNode.insertBefore(overallWrapper, skillsContainer.nextSibling);
+    stackingContextWrapper.parentNode.removeChild(stackingContextWrapper);
+    overallWrapper.appendChild(stackingContextWrapper);
+  }
+  
+  // Now add the skills panel to the overall wrapper, outside the globe container
+  overallWrapper.appendChild(skillsInfo);
   
   // Add a title to the info panel
   const infoTitle = document.createElement('div');
@@ -222,18 +239,6 @@ const skillsGlobe = () => {
   // Add a popup for focused skill
   const focusedSkillPopup = document.createElement('div');
   focusedSkillPopup.className = 'focused-skill-popup';
-  focusedSkillPopup.style.position = 'absolute';
-  focusedSkillPopup.style.display = 'none';
-  focusedSkillPopup.style.padding = '8px 15px';
-  focusedSkillPopup.style.color = 'white';
-  focusedSkillPopup.style.fontWeight = 'bold';
-  focusedSkillPopup.style.borderRadius = '5px';
-  focusedSkillPopup.style.zIndex = '103';
-  focusedSkillPopup.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
-  focusedSkillPopup.style.transform = 'translate(-50%, -100%)';
-  focusedSkillPopup.style.pointerEvents = 'none';
-  focusedSkillPopup.style.fontSize = '16px';
-  focusedSkillPopup.style.letterSpacing = '0.5px';
   canvas.appendChild(focusedSkillPopup);
   
   // Add instructions

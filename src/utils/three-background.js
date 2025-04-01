@@ -228,11 +228,11 @@ const threeBackground = () => {
     rightEyeHighlight.position.set(0.55, 0.35, 0.02);
     sunCore.add(rightEyeHighlight);
     
-    // Create a smile using an arc curve
+    // Create a frown/neutral expression using an arc curve
     const smileCurve = new THREE.EllipseCurve(
-      0, -0.3,             // cx, cy
+      0, -0.1,             // cx, cy - moved up a bit
       0.7, 0.4,           // xRadius, yRadius
-      Math.PI, 0,         // startAngle, endAngle
+      0, Math.PI,         // startAngle, endAngle - REVERSED to make upward curve
       true,              // clockwise
       0                  // rotation
     );
@@ -473,38 +473,66 @@ const threeBackground = () => {
           ray.scale.set(radialScale, lengthScale, 1);
         });
         
-        // Handle blinking with more natural timing
+        // Enhanced blinking animation with more natural timing
         blinkTime -= clock.getDelta();
         if (blinkTime <= 0) {
-        // Close eyes
-        leftEye.scale.y = 0.1;
-        rightEye.scale.y = 0.1;
-        
-        // Reset after a brief moment
-        setTimeout(() => {
-        leftEye.scale.y = 1;
-        rightEye.scale.y = 1;
-          blinkTime = 2 + Math.random() * 3; // More frequent blinking (2-5 seconds)
-          }, 150);
+          // Close eyes with a smoother animation
+          const blinkDuration = 150; // milliseconds
+          const startTime = Date.now();
+          
+          // Create smooth blinking animation
+          const blinkInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const progress = elapsed / blinkDuration;
+            
+            if (progress >= 1) {
+              clearInterval(blinkInterval);
+              leftEye.scale.y = 1;
+              rightEye.scale.y = 1;
+              blinkTime = 2 + Math.random() * 3; // 2-5 seconds between blinks
+            } else {
+              // Create a smooth close and open effect using sine function
+              const blinkAmount = Math.abs(Math.sin(progress * Math.PI));
+              leftEye.scale.y = 1 - (blinkAmount * 0.9); // not completely closed
+              rightEye.scale.y = 1 - (blinkAmount * 0.9);
+            }
+          }, 16); // Approx 60fps
         }
         
-        // Animate smile to move slightly with breathing
-        const smileWave = Math.sin(elapsedTime * 1.5) * 0.07;
-        smile.position.y = smileWave;
-        smile.scale.x = 1 + Math.sin(elapsedTime * 0.8) * 0.05; // Smile widens and narrows slightly
+        // Animate frown to move slightly with breathing - match image
+        const mouthWave = Math.sin(elapsedTime * 1.2) * 0.05; // Subtle movement
+        smile.position.y = -0.1 + mouthWave; // Centered on original position
+        
+        // Very subtle scaling to maintain the frown appearance
+        smile.scale.y = 1 - Math.sin(elapsedTime) * 0.05; // Less scaling for frown
+        smile.scale.x = 1 + Math.sin(elapsedTime * 0.8) * 0.03; // Subtle width change
         
         // Pulse cheeks with breathing
         const cheekPulse = 1 + Math.sin(elapsedTime * 1) * 0.15;
         leftCheek.scale.set(cheekPulse, cheekPulse, 1);
         rightCheek.scale.set(cheekPulse, cheekPulse, 1);
         
-            // Occasional wink
-            if (Math.random() > 0.9995) {
-              rightEye.scale.y = 0.1;
-              setTimeout(() => {
-                rightEye.scale.y = 1;
-              }, 300);
+        // Simultaneous occasional blink (both eyes)
+        if (Math.random() > 0.9995) {
+          const startTime = Date.now();
+          const quickBlinkDuration = 250;
+          
+          const quickBlinkInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const progress = elapsed / quickBlinkDuration;
+            
+            if (progress >= 1) {
+              clearInterval(quickBlinkInterval);
+              leftEye.scale.y = 1;
+              rightEye.scale.y = 1;
+            } else {
+              // Quick blink
+              const blinkAmount = Math.sin(progress * Math.PI);
+              leftEye.scale.y = 1 - (blinkAmount * 0.9);
+              rightEye.scale.y = 1 - (blinkAmount * 0.9);
             }
+          }, 16);
+        }
             
             // React to mouse movement - smoother sun movement
             const targetX = -5 + mouse.x * 0.8;

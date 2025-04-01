@@ -43,11 +43,50 @@
   border-radius: var(--radius-full);
 }
 
+/* Mobile sun icon (for sizes below md breakpoint) */
+.header__sun {
+  display: block;
+  color: var(--clr-light);
+  width: calc(var(--size-2xl) * 1.2); /* Slightly bigger on mobile */
+  height: calc(var(--size-2xl) * 1.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 3.5rem; /* Position it to the left of the hamburger menu */
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.header__sun i {
+  font-size: var(--size-xl);
+}
+
+.header__sun:hover {
+  color: var(--clr-secondary);
+  transform: translateY(-50%) scale(1.1);
+}
+
 /* xs */
-/* @media (min-width: 475px) {} */
+@media (min-width: 475px) {
+  .header__sun {
+    right: 4rem;
+  }
+}
 
 /* sm */
-/* @media (min-width: 640px) {} */
+@media (min-width: 640px) {
+  .header__sun {
+    right: 4.5rem;
+    width: calc(var(--size-2xl) * 1.3);
+    height: calc(var(--size-2xl) * 1.3);
+  }
+  
+  .header__sun i {
+    font-size: calc(var(--size-xl) * 1.2);
+  }
+}
 
 /* md */
 @media (min-width: 768px) {
@@ -56,11 +95,11 @@
     align-items: center;
     list-style: none;
     padding: 0;
-    gap: 2em;
+    gap: 2.5em; /* Increased spacing between items */
   }
 
   .header__link {
-    font-size: var(--size-xs);
+    font-size: var(--size-base); /* Increased from --size-xs */
     text-decoration: none;
     font-weight: 600;
     color: var(--clr-slate600);
@@ -78,14 +117,29 @@
   }
 
   .header__sun {
+    position: static;
+    transform: none;
     display: block;
     color: var(--clr-slate600);
-    width: var(--size-base);
-    height: var(--size-base);
+    width: calc(var(--size-base) * 2); /* 2x bigger */
+    height: calc(var(--size-base) * 2); /* 2x bigger */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--transition-fast);
+  }
+
+  .header__sun i {
+    font-size: var(--size-xl); /* Larger icon */
+  }
+
+  .header__sun:hover {
+    color: var(--clr-secondary);
+    transform: scale(1.1);
   }
 
   .header__resume {
-    font-size: var(--size-xs);
+    font-size: var(--size-base); /* Increased from --size-xs */
   }
 
   .header__bars {
@@ -96,15 +150,19 @@
 /* lg */
 @media (min-width: 1024px) {
   .header__link {
-    font-size: var(--size-sm);
+    font-size: var(--size-lg); /* Increased from --size-sm */
   }
 
   .header__sun {
-    width: var(--size-xl);
-    height: var(--size-xl);
+    width: calc(var(--size-xl) * 2); /* 2x bigger for large screens */
+    height: calc(var(--size-xl) * 2); /* 2x bigger for large screens */
+  }
+
+  .header__sun i {
+    font-size: var(--size-2xl); /* Larger icon for large screens */
   }
 
   .header__resume {
-    font-size: var(--size-sm);
+    font-size: var(--size-lg); /* Increased from --size-sm */
   }
 }

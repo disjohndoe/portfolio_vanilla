@@ -149,9 +149,10 @@
   height: 100%;
 }
 
-/* Styles for interactive elements */
+/* Disabled hover effects for project cards */
 .work-card:hover .project-model-container {
-  opacity: 1;
+  opacity: 0;
+  display: none;
 }
 
 /* Make skills container in dark mode more visible */

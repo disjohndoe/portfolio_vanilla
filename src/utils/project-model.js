@@ -128,19 +128,9 @@ const projectModel = () => {
       // Position camera
       camera.position.z = 5;
       
-      // Mouse interaction for the model
+      // Disabled mouse interaction for the model
       let isHovering = false;
       let rotationSpeed = 0.01;
-      
-      canvasContainer.addEventListener('mouseenter', () => {
-        isHovering = true;
-        rotationSpeed = 0.05;
-      });
-      
-      canvasContainer.addEventListener('mouseleave', () => {
-        isHovering = false;
-        rotationSpeed = 0.01;
-      });
       
       // Track mouse position
       let mouseX = 0;
@@ -184,7 +174,7 @@ const projectModel = () => {
       
       animate();
       
-      // Show/hide the 3D model on hover
+      // Disabled 3D model hover effects
       const originalImg = imgWrapper.querySelector('img');
       if (originalImg) {
         canvasContainer.style.position = 'absolute';
@@ -193,17 +183,10 @@ const projectModel = () => {
         canvasContainer.style.width = '100%';
         canvasContainer.style.height = '100%';
         canvasContainer.style.opacity = '0';
-        canvasContainer.style.transition = 'opacity 0.5s ease';
+        canvasContainer.style.display = 'none'; // Hide the container completely
         
-        imgWrapper.addEventListener('mouseenter', () => {
-          canvasContainer.style.opacity = '1';
-          originalImg.style.opacity = '0.2';
-        });
-        
-        imgWrapper.addEventListener('mouseleave', () => {
-          canvasContainer.style.opacity = '0';
-          originalImg.style.opacity = '1';
-        });
+        // Keep original image always visible at full opacity
+        originalImg.style.opacity = '1';
       }
     } catch (error) {
       console.error("Error creating project model:", error);

@@ -47,14 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
             skillsGlobe();
             console.log('Skills globe initialized');
             
-            setTimeout(() => {
-              try {
-                projectModel();
-                console.log('Project model initialized');
-              } catch (e) {
-                console.error('Project model error:', e);
-              }
-            }, 200);
+            // Project model initialization disabled to remove hover effects
+            // setTimeout(() => {
+            //   try {
+            //     projectModel();
+            //     console.log('Project model initialized');
+            //   } catch (e) {
+            //     console.error('Project model error:', e);
+            //   }
+            // }, 200);
           } catch (e) {
             console.error('Skills globe error:', e);
           }

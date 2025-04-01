@@ -38,6 +38,16 @@
   width: 100%;
 }
 
+/* Work card button styles - no hover effects */
+.work-card__btn.btn:hover {
+  transform: none;
+  box-shadow: 0 4px 10px rgba(255, 0, 102, 0.3);
+}
+
+.work-card__btn.btn:hover:before {
+  width: 0;
+}
+
 .container {
   width: 100%;
   margin-left: auto;

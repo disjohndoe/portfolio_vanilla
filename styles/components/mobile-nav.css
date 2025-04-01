@@ -41,7 +41,7 @@
 }
 
 .mobile-nav__link {
-  font-size: var(--size-xl);
+  font-size: var(--size-2xl); /* Increased from --size-xl */
   text-decoration: none;
   font-weight: 600;
   color: var(--clr-light);
@@ -79,22 +79,28 @@
 }
 
 .mobile-nav__sun {
-  display: block;
-  width: var(--size-xl);
-  height: var(--size-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--size-xl) * 2); /* 2x bigger */
+  height: calc(var(--size-xl) * 2); /* 2x bigger */
   color: var(--clr-light);
   background: rgba(255, 255, 255, 0.05);
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 50%;
   transition: all var(--transition-fast);
 }
 
+.mobile-nav__sun i {
+  font-size: var(--size-2xl); /* Larger icon */
+}
+
 .mobile-nav__sun:hover {
   background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-3px);
+  transform: translateY(-3px) scale(1.1);
 }
 
 .mobile-nav__btn {
-  font-size: var(--size-base);
+  font-size: var(--size-lg); /* Increased from --size-base */
   margin-top: 1rem;
 }

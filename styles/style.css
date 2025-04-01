@@ -244,13 +244,7 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   margin-bottom: var(--spacing-xl);
-}
-
-.work-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-xl);
 }
 
 .work-card__img-wrapper {
@@ -262,11 +256,7 @@ body::-webkit-scrollbar-thumb:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-slow);
-}
-
-.work-card:hover .work-card__img-wrapper img {
-  transform: scale(1.05);
+  transition: none; /* Disabled any transition effects */
 }
 
 .work-card__content {

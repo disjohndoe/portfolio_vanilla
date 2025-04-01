@@ -72,19 +72,7 @@ const animations = () => {
     setTimeout(typeChar, 800);
   }
   
-  // Project card hover effects
-  const workCards = document.querySelectorAll('.work-card');
-  workCards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      card.style.transform = 'translateY(-8px)';
-      card.style.boxShadow = 'var(--shadow-xl)';
-    });
-    
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = 'translateY(0)';
-      card.style.boxShadow = 'var(--shadow-md)';
-    });
-  });
+  // Project card hover effects - REMOVED
 };
 
 export default animations;

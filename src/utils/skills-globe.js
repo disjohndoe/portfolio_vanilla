@@ -62,6 +62,9 @@ const skillsGlobe = () => {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(60, 2, 0.1, 1000);
   
+  // Debug flag for click detection
+  const DEBUG_CLICKS = false;
+  
   // Create renderer with improved error handling
   let renderer;
   try {
@@ -111,7 +114,7 @@ const skillsGlobe = () => {
   const createTextSprite = (skill) => {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    canvas.width = 512; // Doubled for better resolution
+    canvas.width = 384; // Reduced slightly for better performance
     canvas.height = 160;
     
     // Function to draw rounded rectangle
@@ -151,7 +154,7 @@ const skillsGlobe = () => {
     context.stroke();
     
     // Skill name with larger, more readable font
-    context.font = 'bold 52px Arial, sans-serif';
+    context.font = 'bold 48px Arial, sans-serif';
     context.fillStyle = 'white';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
@@ -168,15 +171,27 @@ const skillsGlobe = () => {
       transparent: true
     });
     
+    // Create sprite with unique scale based on text length
     const sprite = new THREE.Sprite(material);
-    sprite.scale.set(1.6, 0.8, 1); // Larger scale for better visibility
+    
+    // Adjust scale based on text length - wider for longer texts
+    let widthScale = 1.4;
+    if (skill.name.length > 8) {
+      widthScale = 1.6;
+    }
+    if (skill.name.length > 12) {
+      widthScale = 1.8;
+    }
+    
+    sprite.scale.set(widthScale, 0.8, 1);
     
     // Store skill data for interaction
     sprite.userData = { 
       skillName: skill.name,
       category: skill.category,
       color: skill.color,
-      originalScale: {x: 1.6, y: 0.8, z: 1}
+      originalScale: {x: widthScale, y: 0.8, z: 1},
+      isSkillSprite: true // Flag to identify skill sprites
     };
     
     return sprite;
@@ -231,28 +246,53 @@ const skillsGlobe = () => {
   // Create orbiting skills
   const skillSprites = [];
   
-  skillsData.forEach((skill, index) => {
-    // Find which ring this skill belongs to
+  // Spread skills more evenly around the globe
+  const spreadSkills = (skills, category) => {
+    const categorySkills = skills.filter(skill => skill.category === category);
+    const count = categorySkills.length;
+    
+    categorySkills.forEach((skill, idx) => {
+      // Calculate even spacing around the circle
+      skill.angle = (idx / count) * Math.PI * 2;
+    });
+  };
+  
+  // Spread each category evenly
+  categories.forEach(category => {
+    spreadSkills(skillsData, category);
+  });
+  
+  // Place skills in general category (without rings) evenly around the sphere
+  const generalSkills = skillsData.filter(skill => skill.category === 'general');
+  const generalCount = generalSkills.length;
+  
+  generalSkills.forEach((skill, idx) => {
+    // Distribute more evenly around the sphere using Fibonacci lattice
+    const phi = Math.acos(-1 + 2 * idx / generalCount);
+    const theta = Math.sqrt(generalCount * Math.PI) * phi;
+    skill.angle = theta;
+    skill.elevation = phi;
+  });
+  
+  // Create sprites for all skills
+  skillsData.forEach((skill) => {
+    let x, y, z;
     const ringIndex = rings.findIndex(ring => ring.category === skill.category);
     
-    let x, y, z;
-    
     if (ringIndex === -1) {
-      // Place 'general' skills in a cloud around the sphere
-      const angle = (index / skillsData.length) * Math.PI * 2;
-      const elevation = Math.random() * Math.PI - Math.PI/2;
+      // Place 'general' skills using their pre-calculated angles
       const radius = 3.5;
       
-      x = radius * Math.cos(elevation) * Math.cos(angle);
-      y = radius * Math.sin(elevation);
-      z = radius * Math.cos(elevation) * Math.sin(angle);
+      x = radius * Math.sin(skill.elevation) * Math.cos(skill.angle);
+      y = radius * Math.cos(skill.elevation);
+      z = radius * Math.sin(skill.elevation) * Math.sin(skill.angle);
     } else {
       // For skills with a category ring, place them on that ring
-      const angle = (index / skillsData.length) * Math.PI * 2;
+      // using their pre-calculated angles for even spacing
       const ringRadius = 3 + ringIndex * 0.5;
       
-      x = Math.cos(angle) * ringRadius;
-      z = Math.sin(angle) * ringRadius;
+      x = Math.cos(skill.angle) * ringRadius;
+      z = Math.sin(skill.angle) * ringRadius;
       y = (Math.random() * 0.5 - 0.25) * ringIndex; // Slight vertical variation
     }
     
@@ -264,8 +304,10 @@ const skillsGlobe = () => {
       sprite,
       initialPosition: new THREE.Vector3(x, y, z),
       category: skill.category,
+      name: skill.name,
       ringIndex,
-      angle: index / skillsData.length * Math.PI * 2,
+      angle: skill.angle,
+      elevation: skill.elevation,
       orbitSpeed: ringIndex === -1 ? 0.05 : (0.2 - ringIndex * 0.05),
       orbitOffset: Math.random() * Math.PI * 2,
       highlighted: false,
@@ -374,6 +416,10 @@ const skillsGlobe = () => {
   const focusOnSkill = (skillData) => {
     if (isAnimating) return;
     
+    if (DEBUG_CLICKS) {
+      console.log("Focusing on skill:", skillData.name);
+    }
+    
     // Set the selected skill
     selectedSkill = skillData;
     isAnimating = true;
@@ -413,7 +459,7 @@ const skillsGlobe = () => {
     const infoPanel = document.createElement('div');
     infoPanel.className = 'skill-info-panel';
     infoPanel.innerHTML = `
-      <h3>${skillData.sprite.userData.skillName}</h3>
+      <h3>${skillData.name}</h3>
       <div class="skill-category">Category: ${skillData.category}</div>
     `;
     
@@ -434,6 +480,10 @@ const skillsGlobe = () => {
   
   const resetFocus = () => {
     if (!selectedSkill || !isAnimating) return;
+    
+    if (DEBUG_CLICKS) {
+      console.log("Resetting focus");
+    }
     
     // Start reset animation
     isAnimating = true;
@@ -566,7 +616,7 @@ const skillsGlobe = () => {
       skillSprites.forEach(skillData => {
         if (skillData === selectedSkill && !scene.userData.isResetting) return;
         
-        const { sprite, angle, orbitSpeed, ringIndex } = skillData;
+        const { sprite, angle, orbitSpeed, ringIndex, elevation } = skillData;
         
         // For skills with a ring
         if (ringIndex !== -1) {
@@ -583,9 +633,15 @@ const skillsGlobe = () => {
           // For skills without a ring (general category),
           // add a gentle floating motion
           const initialPos = skillData.initialPosition;
-          sprite.position.x = initialPos.x + Math.sin(elapsedTime * 0.2 + angle * 5) * 0.2 * timeScale;
-          sprite.position.y = initialPos.y + Math.sin(elapsedTime * 0.3 + angle * 3) * 0.2 * timeScale;
-          sprite.position.z = initialPos.z + Math.sin(elapsedTime * 0.4 + angle * 4) * 0.2 * timeScale;
+          const radius = 3.5;
+          
+          // Calculate position based on spherical coordinates with gentle wobble
+          const elevationWobble = elevation + Math.sin(elapsedTime * 0.2 + angle * 2) * 0.1 * timeScale;
+          const angleWobble = angle + Math.sin(elapsedTime * 0.3) * 0.05 * timeScale;
+          
+          sprite.position.x = radius * Math.sin(elevationWobble) * Math.cos(angleWobble);
+          sprite.position.y = radius * Math.cos(elevationWobble);
+          sprite.position.z = radius * Math.sin(elevationWobble) * Math.sin(angleWobble);
         }
         
         // Make sprites face camera
@@ -597,10 +653,23 @@ const skillsGlobe = () => {
       
       // Check for hovering on skills (only if not already focused)
       if (!selectedSkill) {
-        raycaster.setFromCamera({ x: mouse.lerpX, y: mouse.lerpY }, camera);
-        const intersects = raycaster.intersectObjects(skillSprites.map(data => data.sprite));
+        // Get mouse position in normalized device coordinates
+        // (-1 to +1) for both components
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = ((event.clientX || 0) - rect.left) / rect.width * 2 - 1;
+        const mouseY = -((event.clientY || 0) - rect.top) / rect.height * 2 + 1;
+        
+        raycaster.setFromCamera({ x: mouseX, y: mouseY }, camera);
+        
+        // Get all sprites and check for intersections
+        const sprites = skillSprites.map(data => data.sprite);
+        const intersects = raycaster.intersectObjects(sprites, true);
         
         if (intersects.length > 0) {
+          if (DEBUG_CLICKS) {
+            console.log("Hovering over:", intersects[0].object.userData.skillName);
+          }
+          
           if (intersectedObject !== intersects[0].object) {
             // Reset previous
             if (intersectedObject) {
@@ -665,17 +734,42 @@ const skillsGlobe = () => {
     loadingIndicator.innerHTML = "Failed to start animation";
   }
   
-  // Add click interaction to select/deselect skills
-  canvas.addEventListener('click', (event) => {
+  // Improved click handler
+  canvas.addEventListener('click', function(event) {
     // If already animating, ignore clicks
     if (isAnimating) return;
     
     if (selectedSkill) {
       // Reset focus if already selected
       resetFocus();
-    } else if (intersectedObject) {
-      // Find the skill data for the clicked object
-      const skillData = skillSprites.find(data => data.sprite === intersectedObject);
+      return;
+    }
+    
+    // Get mouse position in normalized device coordinates
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = (event.clientX - rect.left) / rect.width * 2 - 1;
+    const mouseY = -((event.clientY - rect.top) / rect.height * 2 + 1);
+    
+    // Update the raycaster with the mouse position
+    raycaster.setFromCamera({ x: mouseX, y: mouseY }, camera);
+    
+    // Get all sprites
+    const sprites = skillSprites.map(data => data.sprite);
+    
+    // Check for intersections
+    const intersects = raycaster.intersectObjects(sprites);
+    
+    if (intersects.length > 0) {
+      // Find the clicked object
+      const clickedObject = intersects[0].object;
+      
+      if (DEBUG_CLICKS) {
+        console.log("Clicked on:", clickedObject.userData.skillName);
+      }
+      
+      // Find the skill data for this object
+      const skillData = skillSprites.find(data => data.sprite === clickedObject);
+      
       if (skillData) {
         focusOnSkill(skillData);
       }

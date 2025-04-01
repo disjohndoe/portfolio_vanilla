@@ -77,7 +77,7 @@ html {
 
 body {
   font-family: var(--ff-primary);
-  background-color: var(--clr-dark);
+  background-color: transparent;
   color: var(--clr-light);
   line-height: 1.5;
   overflow-x: hidden;

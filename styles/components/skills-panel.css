@@ -1,0 +1,99 @@
+/* Globe and skills wrapper */
+.globe-skills-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  gap: 20px;
+}
+
+/* Ensure globe container takes appropriate space */
+.globe-skills-wrapper > div:first-child {
+  flex: 1;
+  min-width: 0;
+  max-width: 70%;
+  position: relative;
+}
+
+/* Ensure the globe canvas shows up with proper dimensions */
+.globe-container {
+  height: 650px !important;
+  width: 100% !important;
+}
+
+.three-canvas-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Skills info panel styling */
+.skills-info-display {
+  width: 220px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  z-index: 102;
+  box-shadow: 0 0 15px rgba(0, 100, 255, 0.5);
+  border: 1px solid rgba(0, 150, 255, 0.5);
+  max-height: 650px;
+  overflow-y: auto;
+  align-self: center;
+  flex-shrink: 0; /* Prevent the panel from shrinking */
+}
+
+/* Add scrollbar styling */
+.skills-info-display::-webkit-scrollbar {
+  width: 8px;
+}
+
+.skills-info-display::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.skills-info-display::-webkit-scrollbar-thumb {
+  background: rgba(0, 120, 255, 0.5);
+  border-radius: 10px;
+}
+
+.skills-info-display::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 120, 255, 0.7);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .skills-info-display {
+    width: 200px;
+    font-size: 14px;
+    padding: 12px;
+    margin-left: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-info-display {
+    width: 180px;
+    margin-left: 12px;
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 600px) {
+  /* For mobile, reposition the skills panel below the globe */
+  .skills-info-display {
+    width: 100%;
+    max-width: 450px;
+    margin-left: 0;
+    margin-top: 20px;
+    max-height: 300px;
+  }
+  
+  /* Change overall wrapper to column layout on mobile */
+  .globe-container + div {
+    flex-direction: column;
+  }
+}

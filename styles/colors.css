@@ -1,0 +1,18 @@
+/**
+ * Global Colors - Croatian Football Federation inspired
+ * 
+ * Primary colors:
+ * --clr-red: #E30613      (Croatian red - from checkerboard)
+ * --clr-white: #FFFFFF    (White - from checkerboard)
+ * --clr-blue: #0C4EA2     (Croatian blue - from central shield)
+ * --clr-gold: #D4AF37     (Gold - from letters and ball)
+ * --clr-blue-light: #3A78CA (Lighter blue for dark mode)
+ * 
+ * These colors are applied throughout the website:
+ * - Blue (#0C4EA2) is used for titles, buttons, and accents
+ * - Red (#E30613) is used for secondary elements and hover states
+ * - Gold (#D4AF37) is used for tech tags and special highlights
+ * - White (#FFFFFF) is used for text on dark backgrounds
+ */
+
+/* Global color variables are defined in style.css */

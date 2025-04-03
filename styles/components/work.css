@@ -1,254 +1,85 @@
 .work {
-    text-align: center;
-  }
-  
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.work__title {
+  font-size: var(--size-3xl);
+  color: var(--clr-primary); /* Updated to use primary color */
+  margin-bottom: var(--spacing-xl); /* Increased from spacing-md to spacing-xl */
+  position: relative;
+  display: inline-block;
+  padding-bottom: var(--spacing-xs); /* Added padding to create more space for decoration */
+}
+
+.work__title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px; /* Adjusted to position the line properly with increased margin */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: var(--clr-gradient-1);
+  border-radius: var(--radius-full);
+}
+
+.work__description {
+  max-width: 70ch;
+  font-size: var(--size-base);
+  color: var(--clr-white); /* Changed to white for dark mode visibility */
+  margin: var(--spacing-xl) auto var(--spacing-xl); /* Increased top margin */
+  line-height: 1.6;
+}
+
+.light-mode .work__description {
+  color: var(--clr-slate600);
+}
+
+.work__container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  width: 100%;
+  margin: 0 auto;
+  align-items: center;
+}
+
+/* Work cards are now styled in the main style.css file */
+
+/* Responsive styles */
+@media (min-width: 768px) {
   .work__title {
-    font-size: var(--size-2xl);
-    color: var(--clr-light);
+    font-size: var(--size-4xl);
+    margin-bottom: calc(var(--spacing-xl) * 1.5); /* Increased title bottom margin */
   }
   
   .work__description {
-    max-width: 60ch;
-    font-size: var(--size-sm);
-    color: var(--clr-slate600);
-    margin: 1rem auto;
+    font-size: var(--size-lg);
+    margin-top: calc(var(--spacing-xl) * 1.2); /* Increased description top margin */
+    margin-bottom: calc(var(--spacing-xl) * 1.5);
   }
-  
-  .work__project-title {
-    font-size: var(--size-base);
-    margin-bottom: 1rem;
-  }
-  
-  .work__img-wrapper {
-    position: relative;
-  }
-  
-  .work__img-wrapper::after {
-    content: '';
-    background-color: rgba(79, 70, 229, 0.7);
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    transition: background-color 0.3s;        
-  }
-  
-  .work__img-wrapper:hover::after {
-    background-color: rgba(79, 70, 229, 0.1);
-    transition-duration: 2500ms;
-  }
-  
-  .work__project:not(:last-child) {
-    margin-bottom: 5rem;
-  }
-  
-  .work__project-description1 {
-    font-size: var(--size-sm);
-    color: var(--clr-slate600);
-    margin: 1rem 0;
-  }
-  
-  .work__project-description2 {
-    font-size: var(--size-sm);
-    color: var(--clr-slate400);
-    margin-bottom: 1rem;
-  }
-  
-  .work__project-btn {
-    font-size: var(--size-sm);
-  }
-  
-  .work__project-subtitle {
-    display: none;
-  }
-  
-  /* xs */
-  @media (min-width: 475px) {
-    .work__title {
-      font-size: var(--size-3xl);
-    }
-  
-    .work__description {
-      font-size: var(--size-base);
-      margin: 1.5rem auto;
-    }
-  
-    .work__project-title {
-      font-size: var(--size-lg);
-      margin-bottom: 1.5rem;
-    }
-  
-    .work__project-description1 {
-      font-size: var(--size-base);
-      margin: 1.5rem 0;
-    }
-  
-    .work__project-description2 {
-      font-size: var(--size-base);
-      margin-bottom: 1.5rem;
-    }
-  
-    .work__project-btn {
-      font-size: var(--size-base);
-    }
-  }
-  
-  /* sm */
-  @media (min-width: 640px) {
-    .work__container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      /* Need to change these if adding new projects */
-      grid-template-areas:
-        'image1 content1'
-        'content2 image2'
-        'image3 content3';
-      place-items: center;
-    }
-  
-    .work__image1 {
-      grid-area: image1;
-    }
-  
-    .work__image2 {
-      grid-area: image2;
-    }
-  
-    .work__image3 {
-      grid-area: image3;
-    }  
+}
 
-  
-    .work__content1 {
-      grid-area: content1;      
-    }
-  
-    .work__content2 {
-      grid-area: content2;
-    }
-  
-    .work__content3 {
-      grid-area: content3;
-    }  
-    /* Need to change up to here, don't forget to change class number values in index.html */
- 
-    .work__project {
-      padding: 0 1rem;
-    }
-  
-    .work__project-title {
-      display: none;
-    }
-  
-    .work__project-description1 {
-      font-size: var(--size-xs);
-      margin: 1em 0;
-    }
-  
-    .work__project-description2 {
-      font-size: var(--size-xs);
-      margin-bottom: 1em;
-    }
-  
-    .work__project-btn {
-      font-size: var(--size-xs);
-      ;
-    }
-  
-    .work__project:not(:last-child) {
-      margin-bottom: 0;
-    }
-  
-    .work__project-subtitle {
-      display: block;
-      font-size: var(--size-base);
-    }
+@media (min-width: 1280px) {
+  .work__title {
+    font-size: var(--size-5xl);
+    margin-bottom: calc(var(--spacing-xl) * 2); /* Double the spacing for large screens */
   }
   
-  /* md */
-  @media (min-width: 768px) {
-    .work__project-description1 {
-      font-size: var(--size-sm);
-    }
-  
-    .work__project-description2 {
-      font-size: var(--size-sm);
-    }
-  
-    .work__project-btn {
-      font-size: var(--size-sm);
-    }
-  
-    .work__project-subtitle {
-      font-size: var(--size-lg);
-    }
+  .work__description {
+    font-size: var(--size-xl);
+    margin: calc(var(--spacing-xl) * 1.5) auto var(--spacing-3xl);
+    margin-bottom: 4rem; /* Added more margin bottom for large screens */
   }
   
-  /* lg */
-  @media (min-width: 1024px) {
-    .work__title {
-      font-size: var(--size-4xl);
-    }
-  
-    .work__description {
-      font-size: var(--size-lg);          
-    }
-  
-    .work__project-description1 {
-      font-size: var(--size-base);
-    }
-  
-    .work__project-description2 {
-      font-size: var(--size-base);
-    }
-  
-    .work__project-btn {
-      font-size: var(--size-base);
-    }
-  
-    .work__project-subtitle {
-      font-size: var(--size-xl);
-    }
+  .work__container {
+    width: 90%;
+    margin: 0 auto;
   }
-  
-  /* xl */
-  @media (min-width: 1280px) {
-    .work__title {
-      font-size: var(--size-5xl);
-    }
-  
-    .work__description {
-      font-size: var(--size-xl);
-      margin: 2rem auto;
-    }
-  
-    .work__project-description1 {
-      font-size: var(--size-lg);
-    }
-  
-    .work__project-description2 {
-      font-size: var(--size-lg);
-    }
-  
-    .work__project-btn {
-      font-size: var(--size-lg);
-    }
-  
-    .work__project-subtitle {
-      font-size: var(--size-2xl);
-    }
-  
-    .work__container {
-      width: 80%;
-      margin: 0 auto;
-    }
-  }
-  
-  /* 2xl */
-  @media (min-width: 1536px) {
-    .work__container {
-      width: 70%;
-    }
-  }
+}

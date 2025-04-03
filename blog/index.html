@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/dev.png" type="image/x-icon">
+    <!-- Modern font import -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Font Awesome for better icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Blog specific styles -->
+    <link rel="stylesheet" href="./blog.css">
+    <title>Blog - Hrvoje Matosevic</title>
+    <meta name="description" content="Technical articles and thoughts about web development, programming, and tech." />
+  </head>
+  <body>
+    <header class="header container">
+      <nav>
+        <a href="../" class="logo">HM</a>
+        <ul class="header__menu">
+          <li class="header__link">
+            <a href="../#about">About</a>
+          </li>
+          <li class="header__link">
+            <a href="../#featured">My Work</a>
+          </li>
+          <li class="header__link">
+            <a href="./" class="active">Blog</a>
+          </li>
+          <li class="header__link">
+            <a href="../#contact">Contact</a>
+          </li>
+          <li class="header__line">
+          </li>
+          <li>
+            <button id="theme-toggle" class="header__sun header__right">
+              <i class="fas fa-sun"></i>
+            </button>
+          </li>
+        </ul>
+        <button class="header__bars">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+    </header>
+    
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+      <div class="mobile-nav__close">
+        <i class="fas fa-times"></i>
+      </div>
+      <nav>
+        <ul class="mobile-nav__menu">
+          <li>
+            <a class="mobile-nav__link" href="../#about">About</a>
+          </li>
+          <li>
+            <a class="mobile-nav__link" href="../#featured">Work</a>
+          </li>
+          <li>
+            <a class="mobile-nav__link active" href="./">Blog</a>
+          </li>
+          <li>
+            <a class="mobile-nav__link" href="../#contact">Contact</a>
+          </li>
+          <li class="mobile-nav__link-line"></li>
+          <li>
+            <button id="theme-toggle" class="mobile-nav__sun">
+              <i class="fas fa-sun"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    
+    <main>
+      <section class="blog-header container">
+        <h1 class="blog-title">Blog</h1>
+        <p class="blog-description">Thoughts, tutorials, and insights about web development and technology.</p>
+      </section>
+      
+      <section class="blog-posts container">
+        <div class="posts-container" id="posts-container">
+          <!-- Posts will be loaded here via JavaScript -->
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading posts...
+          </div>
+        </div>
+      </section>
+    </main>
+    
+    <footer class="footer container section">
+      <div class="footer__content">
+        <h3 class="footer__title">Hrvoje Matosevic</h3>
+        <p class="footer__copyright">&copy; 2025 All rights reserved</p>
+      </div>
+      <div class="footer__links">
+        <a href="../" class="footer__link">Home</a>
+        <a href="../#about" class="footer__link">About</a>
+        <a href="../#featured" class="footer__link">Work</a>
+        <a href="../#contact" class="footer__link">Contact</a>
+      </div>
+    </footer>
+
+    <script src="../assets/utils-0bfd2f6e.js"></script>
+    <script src="./blog.js"></script>
+  </body>
+</html>

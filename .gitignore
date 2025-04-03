@@ -1,0 +1,58 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Build outputs
+/dist
+/build
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Temporary files
+.tmp/
+.temp/
+tmp/
+temp/
+
+# Cache
+.cache/
+.npm/
+
+# Testing
+/coverage
+
+# Local development server
+.local-server/
+
+# Database backups
+*.sql
+*.sqlite
+*.sqlite3
+
+# Sensitive files
+api/db/config.php
+
+# Deprecated content
+/deprecated

@@ -42,8 +42,14 @@ const mobileNav = () => {
   `;
   document.head.appendChild(style);
 
-  headerBtn.addEventListener('click', openMobileNav);
-  closeBtn.addEventListener('click', closeMobileNav);
+  headerBtn.addEventListener('click', function(e) {
+    e.stopPropagation(); // Prevent event from bubbling up
+    openMobileNav();
+  });
+  closeBtn.addEventListener('click', function(e) {
+    e.stopPropagation(); // Prevent event from bubbling up
+    closeMobileNav();
+  });
 
   mobileLinks.forEach(link => {
     link.addEventListener('click', closeMobileNav);
@@ -58,7 +64,11 @@ const mobileNav = () => {
   
   // Close mobile nav on outside click
   document.addEventListener('click', (e) => {
-    if (isMobileNavOpen && !mobileNav.contains(e.target) && e.target !== headerBtn) {
+    // Only close if mobile nav is open and the click is outside the nav
+    // and not on the hamburger button or its children
+    if (isMobileNavOpen && 
+        !mobileNav.contains(e.target) && 
+        !headerBtn.contains(e.target)) {
       closeMobileNav();
     }
   });

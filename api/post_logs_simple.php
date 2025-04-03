@@ -7,6 +7,9 @@
 // Require admin authentication
 require_once 'auth_admin.php';
 
+// Include blog constants
+require_once 'blog_constants.php';
+
 // Constants
 define('ADMIN_POSTS_DIR', dirname(__DIR__) . '/posts/');
 define('PUBLIC_POSTS_DIR', dirname(__DIR__) . '/blog_data/');

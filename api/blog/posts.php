@@ -27,6 +27,15 @@ try {
         $post = $db->fetchOne($query, [$post_id]);
         
         if ($post) {
+            // Get tags/categories for this post
+            $tagQuery = "SELECT c.name 
+                       FROM blog_categories c
+                       JOIN blog_post_categories pc ON c.id = pc.category_id
+                       WHERE pc.post_id = ?";
+            
+            $tags = $db->fetchColumn($tagQuery, [$post_id]);
+            $post['tags'] = $tags ? $tags : [];
+            
             // Success! Return the post
             echo json_encode($post);
         } else {
@@ -45,6 +54,23 @@ try {
                   ORDER BY p.published_at DESC";
         
         $posts = $db->fetchAll($query);
+        
+        // Add empty tags array to each post
+        foreach ($posts as &$post) {
+            $post['tags'] = [];
+            
+            // Get categories for this post
+            $tagQuery = "SELECT c.name 
+                         FROM blog_categories c
+                         JOIN blog_post_categories pc ON c.id = pc.category_id
+                         WHERE pc.post_id = ?";
+            
+            $tags = $db->fetchColumn($tagQuery, [$post['id']]);
+            
+            if ($tags) {
+                $post['tags'] = $tags;
+            }
+        }
         
         // Return the posts
         echo json_encode($posts);

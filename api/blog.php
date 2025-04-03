@@ -65,6 +65,10 @@ try {
             if ($post_data) {
                 // Security: Only include published posts
                 if (isset($post_data['published']) && $post_data['published'] === true) {
+                    // Ensure tags exist
+                    if (!isset($post_data['tags']) || !is_array($post_data['tags'])) {
+                        $post_data['tags'] = [];
+                    }
                     $posts[] = $post_data;
                 }
             }

@@ -77,6 +77,30 @@ html {
   scroll-padding-top: 5rem;
 }
 
+/* Initial state of the loading page */
+body.loading-start {
+  overflow: hidden;
+}
+
+/* Make hero immediately visible */
+.hero {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}
+
+/* Priority Loading state for content sections */
+.content-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.content-section.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .light-mode {
   --clr-light: #070a13;
   --clr-dark: rgb(241, 245, 249);
@@ -98,6 +122,12 @@ body {
   line-height: 1.5;
   overflow-x: hidden;
   cursor: default;
+}
+
+/* Ensure header is always visible */
+.header {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 img,
@@ -434,6 +464,17 @@ body:not(.light-mode) .logo {
   gap: var(--spacing-xl);
   padding-top: var(--spacing-xl);
   padding-bottom: var(--spacing-xl);
+  will-change: transform, opacity;
+}
+
+.hero__img {
+  display: block;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  will-change: transform;
+  /* Add loading priority */
+  loading: eager;
+  -webkit-loading: eager;
 }
 
 .hero__cta {
@@ -448,6 +489,16 @@ body:not(.light-mode) .logo {
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+}
+
+/* Add styles for critical CSS loading */
+.three-canvas {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+.three-canvas.loaded {
+  opacity: 1;
 }
 
 /* Responsive styles */

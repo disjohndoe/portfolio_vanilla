@@ -25,9 +25,9 @@ export default function loader() {
   // Add initial loading class
   document.body.classList.add('loading-start');
   
-  // Mark content sections for progressive loading
-  const contentSections = [
-    'section.hero',
+  // List of sections in desired loading order
+  const contentSectionsInOrder = [
+    'section.hero', // Hero first
     'section.about',
     'section.featured',
     'section.work',
@@ -35,76 +35,64 @@ export default function loader() {
     'footer'
   ];
   
-  // Wait for DOM to be ready
-  document.addEventListener('DOMContentLoaded', () => {
-    // Find all content sections and add the class
-    contentSections.forEach(selector => {
+  // Immediately make the hero section visible, load others progressively
+  const showHeroFirst = () => {
+    const heroSection = document.querySelector('section.hero');
+    if (heroSection) {
+      heroSection.classList.add('content-section');
+      heroSection.classList.add('loaded');
+      heroSection.style.opacity = '1';
+      heroSection.style.visibility = 'visible';
+      heroSection.style.transform = 'translateY(0)';
+    }
+    
+    // For other sections, prepare them for delayed loading
+    contentSectionsInOrder.slice(1).forEach((selector, index) => {
       const elements = document.querySelectorAll(selector);
-      elements.forEach(el => el.classList.add('content-section'));
+      elements.forEach(el => {
+        el.classList.add('content-section');
+        el.dataset.loadOrder = index + 1; // Hero is 0, rest follow
+      });
     });
     
-    // Once DOM is ready, allow showing header and basic structure
+    // Remove initial loading state to allow header visibility
     document.body.classList.remove('loading-start');
-    
-    // Track images and critical resources loading
-    let imagesLoaded = 0;
-    const imagesToLoad = document.querySelectorAll('img').length;
-    
-    // If no images, just remove loader after a minimum time
-    if (imagesToLoad === 0) {
-      setTimeout(removeLoader, 800);
-    } else {
-      // Track image loading progress
-      document.querySelectorAll('img').forEach(img => {
-        // For already loaded or cached images
-        if (img.complete) {
-          imageLoaded();
-        } else {
-          // For images still loading
-          img.addEventListener('load', imageLoaded);
-          img.addEventListener('error', imageLoaded); // Count errors as loaded to avoid hanging
-        }
-      });
-    }
-    
-    function imageLoaded() {
-      imagesLoaded++;
-      const progress = imagesLoaded / imagesToLoad;
-      
-      // When all images are loaded, remove loader
-      if (progress >= 1) {
-        removeLoader();
-      }
-    }
-  });
+  };
   
-  // When page is fully loaded, ensure all content is visible
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.add('loaded');
-      });
-      
-      // Ensure loader is removed
-      removeLoader();
-    }, 200);
-  });
+  // Call showHeroFirst immediately when script runs
+  showHeroFirst();
   
-  function removeLoader() {
-    // Short delay to ensure a minimum loading time for better UX
+  // Wait for DOM to be ready for the rest of the content
+  document.addEventListener('DOMContentLoaded', () => {
+    // Remove initial loading spinner quickly
     setTimeout(() => {
-      // Make sure all sections are revealed
-      document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.add('loaded');
-      });
-      
-      // Remove loader with fade out
       loaderContainer.classList.add('hidden');
+      
+      // Start loading other sections progressively
+      loadRemainingContent();
       
       // Remove loader after transition
       setTimeout(() => {
         loaderContainer.remove();
-      }, 500);
-    }, 600);
+      }, 300);
+    }, 100);
+  });
+  
+  function loadRemainingContent() {
+    // Get all non-hero content sections and sort them by load order
+    const remainingSections = Array.from(document.querySelectorAll('.content-section:not(.loaded)'));
+    
+    // Add loaded class with proper delays based on data-load-order
+    remainingSections.forEach(section => {
+      const delay = parseInt(section.dataset.loadOrder || 0) * 100;
+      setTimeout(() => {
+        section.classList.add('loaded');
+      }, delay);
+    });
   }
+  
+  // Also load any remaining sections when everything is ready
+  window.addEventListener('load', () => {
+    loadRemainingContent();
+  });
 }

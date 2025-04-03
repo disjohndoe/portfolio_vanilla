@@ -34,18 +34,38 @@ function initMobileNav() {
   const mobileNavToggle = document.querySelector('.header__bars');
   const mobileNavClose = document.querySelector('.mobile-nav__close');
   const mobileNav = document.querySelector('.mobile-nav');
+  const mobileLinks = document.querySelectorAll('.mobile-nav__link');
 
   if (mobileNavToggle && mobileNav) {
     mobileNavToggle.addEventListener('click', () => {
+      mobileNav.style.display = 'flex';
       mobileNav.classList.add('active');
+      document.body.style.overflowY = 'hidden';
     });
   }
 
   if (mobileNavClose && mobileNav) {
     mobileNavClose.addEventListener('click', () => {
       mobileNav.classList.remove('active');
+      setTimeout(() => {
+        mobileNav.style.display = 'none';
+        document.body.style.overflowY = 'auto';
+      }, 300);
     });
   }
+  
+  // Close mobile nav when clicking links
+  mobileLinks.forEach(link => {
+    if (link) {
+      link.addEventListener('click', () => {
+        mobileNav.classList.remove('active');
+        setTimeout(() => {
+          mobileNav.style.display = 'none';
+          document.body.style.overflowY = 'auto';
+        }, 300);
+      });
+    }
+  });
 }
 
 /**

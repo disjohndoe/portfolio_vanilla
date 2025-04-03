@@ -14,6 +14,12 @@
   text-align: center;
   padding: 2rem;
   overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.mobile-nav.active {
+  transform: translateX(0);
 }
 
 /* Light mode version of mobile nav */

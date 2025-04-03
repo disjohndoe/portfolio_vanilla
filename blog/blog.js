@@ -31,21 +31,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Open mobile menu
   menuBtn?.addEventListener('click', () => {
-    mobileNav.classList.add('mobile-nav--open');
+    mobileNav.style.display = 'flex';
+    mobileNav.classList.add('active');
     document.body.style.overflow = 'hidden';
   });
 
   // Close mobile menu
   closeBtn?.addEventListener('click', () => {
-    mobileNav.classList.remove('mobile-nav--open');
-    document.body.style.overflow = 'auto';
+    mobileNav.classList.remove('active');
+    setTimeout(() => {
+      mobileNav.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }, 300);
   });
 
   // Close mobile menu when clicking a link
   mobileLinks.forEach(link => {
     link.addEventListener('click', () => {
-      mobileNav.classList.remove('mobile-nav--open');
-      document.body.style.overflow = 'auto';
+      mobileNav.classList.remove('active');
+      setTimeout(() => {
+        mobileNav.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }, 300);
     });
   });
 

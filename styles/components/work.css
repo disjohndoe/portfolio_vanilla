@@ -11,7 +11,7 @@
 .work__title {
   font-size: var(--size-3xl);
   color: var(--clr-primary); /* Updated to use primary color */
-  margin-bottom: var(--spacing-xl); /* Increased from spacing-md to spacing-xl */
+  margin-bottom: var(--spacing-md); /* Adjusted for mobile */
   position: relative;
   display: inline-block;
   padding-bottom: var(--spacing-xs); /* Added padding to create more space for decoration */
@@ -33,8 +33,9 @@
   max-width: 70ch;
   font-size: var(--size-base);
   color: var(--clr-white); /* Changed to white for dark mode visibility */
-  margin: var(--spacing-xl) auto var(--spacing-xl); /* Increased top margin */
+  margin: var(--spacing-sm) auto var(--spacing-md); /* Adjusted for mobile */
   line-height: 1.6;
+  padding: 0 0.25rem;
 }
 
 .light-mode .work__description {
@@ -44,7 +45,7 @@
 .work__container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-md);
   width: 100%;
   margin: 0 auto;
   align-items: center;
@@ -63,6 +64,11 @@
     font-size: var(--size-lg);
     margin-top: calc(var(--spacing-xl) * 1.2); /* Increased description top margin */
     margin-bottom: calc(var(--spacing-xl) * 1.5);
+    padding: 0;
+  }
+  
+  .work__container {
+    gap: var(--spacing-xl);
   }
 }
 

@@ -54,7 +54,7 @@ export default defineConfig({
           dest: '.' 
         },
         {
-          src: 'blog/**/*.{php,css,js,html}',
+          src: 'blog/**/*',
           dest: 'blog/'
         }
       ]

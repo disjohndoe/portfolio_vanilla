@@ -52,13 +52,13 @@
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
   max-width: 1400px;
 }
 
 .section {
-  margin-top: 6rem;
+  margin-top: 2.5rem;
   opacity: 0;
   transform: translateY(20px);
   animation: fadeIn 0.8s ease forwards;
@@ -76,8 +76,12 @@
 /* Responsive spacing */
 @media (min-width: 475px) {
   .container {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .section {
+    margin-top: 3.5rem;
   }
 }
 

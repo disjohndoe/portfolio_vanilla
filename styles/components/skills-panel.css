@@ -45,6 +45,35 @@
   flex-shrink: 0; /* Prevent the panel from shrinking */
 }
 
+/* Improve readability in light theme */
+.light-mode .skills-info-display {
+  background: rgba(240, 244, 248, 0.9);
+  color: var(--clr-light);
+  box-shadow: 0 0 15px rgba(12, 78, 162, 0.4);
+  border: 1px solid rgba(12, 78, 162, 0.5);
+}
+
+.light-mode .skills-info-display .category-filter,
+.light-mode .skills-info-display .skill-item {
+  color: var(--clr-dark) !important;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.light-mode .skills-info-display .category-filter.active {
+  background-color: rgba(12, 78, 162, 0.2);
+}
+
+/* Make sure we override inline styles for category filters */
+.light-mode .skills-info-display .category-filters div,
+.light-mode .skills-info-display .category-filter {
+  color: var(--clr-dark) !important;
+}
+
+/* Ensure description text is also readable */
+.light-mode .skills-info-display > div {
+  color: var(--clr-dark);
+}
+
 /* Add scrollbar styling */
 .skills-info-display::-webkit-scrollbar {
   width: 8px;

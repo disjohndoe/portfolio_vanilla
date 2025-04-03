@@ -123,8 +123,17 @@ const skillsGlobe = () => {
   infoTitle.style.fontWeight = 'bold';
   infoTitle.style.fontSize = '16px';
   infoTitle.style.marginBottom = '10px';
-  infoTitle.style.borderBottom = '1px solid rgba(255,255,255,0.3)';
   infoTitle.style.paddingBottom = '5px';
+  
+  // Set appropriate colors based on theme
+  if (document.body.classList.contains('light-mode')) {
+    infoTitle.style.color = '#070a13';
+    infoTitle.style.borderBottom = '1px solid rgba(7, 10, 19, 0.3)';
+  } else {
+    infoTitle.style.color = 'white';
+    infoTitle.style.borderBottom = '1px solid rgba(255, 255, 255, 0.3)';
+  }
+  
   skillsInfo.appendChild(infoTitle);
   
   // Add a description
@@ -133,6 +142,7 @@ const skillsGlobe = () => {
   infoDesc.style.fontSize = '12px';
   infoDesc.style.marginBottom = '10px';
   infoDesc.style.opacity = '0.8';
+  infoDesc.style.color = document.body.classList.contains('light-mode') ? '#070a13' : 'white';
   skillsInfo.appendChild(infoDesc);
   
   // Add category filters
@@ -149,11 +159,20 @@ const skillsGlobe = () => {
   allFilter.textContent = 'All';
   allFilter.dataset.category = 'all';
   allFilter.style.padding = '3px 8px';
-  allFilter.style.backgroundColor = 'rgba(255,255,255,0.2)';
-  allFilter.style.borderRadius = '5px';
   allFilter.style.fontSize = '12px';
   allFilter.style.cursor = 'pointer';
   allFilter.style.transition = 'all 0.2s ease';
+  allFilter.style.borderRadius = '5px';
+  
+  // Set appropriate colors based on theme
+  if (document.body.classList.contains('light-mode')) {
+    allFilter.style.color = '#070a13';
+    allFilter.style.backgroundColor = 'rgba(12, 78, 162, 0.2)';
+  } else {
+    allFilter.style.color = 'white';
+    allFilter.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+  }
+  
   categoryFilters.appendChild(allFilter);
   
   // Add category filters
@@ -163,11 +182,19 @@ const skillsGlobe = () => {
     filter.textContent = value.name;
     filter.dataset.category = key;
     filter.style.padding = '3px 8px';
-    filter.style.backgroundColor = 'rgba(255,255,255,0.1)';
     filter.style.borderRadius = '5px';
     filter.style.fontSize = '12px';
     filter.style.cursor = 'pointer';
     filter.style.transition = 'all 0.2s ease';
+    
+    // Set appropriate colors based on theme
+    if (document.body.classList.contains('light-mode')) {
+      filter.style.color = '#070a13';
+      filter.style.backgroundColor = 'rgba(7, 10, 19, 0.1)';
+    } else {
+      filter.style.color = 'white';
+      filter.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+    }
     
     // Add color indicator
     const colorIndicator = document.createElement('span');

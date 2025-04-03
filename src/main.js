@@ -44,6 +44,11 @@ if (currentPath.includes('blog.html')) {
 // Initialize page navigation (including mobile nav and dark mode)
 setupPage(currentPage);
 
+// Directly initialize mobile navigation on homepage
+document.addEventListener('DOMContentLoaded', () => {
+  mobileNav();
+});
+
 // Initialize other components
 lazyLoading();
 animations();

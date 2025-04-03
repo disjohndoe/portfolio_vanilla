@@ -16,10 +16,13 @@
   overflow-y: auto;
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
+  will-change: transform;
 }
 
-.mobile-nav.active {
-  transform: translateX(0);
+.mobile-nav.active,
+.mobile-nav[style*="transform: translateX(0"]
+ {
+  transform: translateX(0) !important;
 }
 
 /* Light mode version of mobile nav */

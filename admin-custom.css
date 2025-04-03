@@ -1,0 +1,45 @@
+/* Custom styles for admin dashboard */
+
+/* Make the action buttons more visible */
+.admin-table__actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.admin-btn--danger {
+  background-color: #ef4444 !important;
+  color: white !important;
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+}
+
+.admin-btn--danger:hover {
+  background-color: #dc2626 !important;
+}
+
+/* Fix link styles */
+a.admin-btn {
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Improve table layout */
+.admin-table th, 
+.admin-table td {
+  padding: 10px !important;
+  vertical-align: middle !important;
+}
+
+/* Make sure buttons are visible in all cases */
+.admin-btn {
+  min-width: 60px !important;
+  text-align: center !important;
+  justify-content: center !important;
+}

@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
     
+    <!-- Custom CSS for admin -->
+    <link rel="stylesheet" href="admin-custom.css">
+    
     <style>
       :root {
         --color-primary: #4f46e5;
@@ -487,7 +490,7 @@
           <div class="admin-card">
             <div class="admin-card__header">
               <h2 class="admin-card__title">Recent Posts</h2>
-              <a href="#posts" class="admin-btn admin-btn--primary" data-view="posts">
+              <a href="#posts" class="admin-btn admin-btn--primary" id="view-all-posts-btn">
                 View All
               </a>
             </div>
@@ -772,7 +775,7 @@
                       <button class="admin-btn admin-btn--primary admin-btn--small edit-post-btn" data-id="${post.id}">
                         Edit
                       </button>
-                      <a href="/blog-post.html?id=${post.id.replace(/^[^a-zA-Z0-9_-]+|[^a-zA-Z0-9_-]+$/g, '')}" target="_blank" class="admin-btn admin-btn--small">
+                      <a href="blog-post.html?id=${post.id}" target="_blank" class="admin-btn admin-btn--small">
                         View
                       </a>
                       <button class="admin-btn admin-btn--danger admin-btn--small delete-post-btn" data-id="${post.id}">
@@ -877,7 +880,7 @@
                       <button class="admin-btn admin-btn--primary admin-btn--small edit-list-post-btn" data-id="${post.id}">
                         Edit
                       </button>
-                      <a href="/blog-post.html?id=${post.id.replace(/^[^a-zA-Z0-9_-]+|[^a-zA-Z0-9_-]+$/g, '')}" target="_blank" class="admin-btn admin-btn--small">
+                      <a href="blog-post.html?id=${post.id}" target="_blank" class="admin-btn admin-btn--small">
                         View
                       </a>
                       <button class="admin-btn admin-btn--danger admin-btn--small delete-post-btn" data-id="${post.id}">
@@ -1188,6 +1191,12 @@
             const action = item.getAttribute('data-action');
             showView(view, action);
           });
+        });
+        
+        // Initialize View All button in recent posts
+        document.getElementById('view-all-posts-btn').addEventListener('click', (event) => {
+          event.preventDefault();
+          showView('posts');
         });
         
         // Initialize new post buttons

@@ -55,9 +55,7 @@ RewriteRule ^api/token/?$ api/token.php [L]
 RewriteCond %{REQUEST_URI} ^/admin\.html$ [NC]
 RewriteRule ^ admin_auth.php [L]
 
-# Frontend rewrites
-# Rewrite blog post URLs
-RewriteRule ^blog/([^/]+)$ blog-post.html?id=$1 [L,QSA]
+# Frontend rewrites - Blog rules removed
 
 # Security headers
 <IfModule mod_headers.c>

@@ -1,7 +1,7 @@
 <?php
 /**
  * Direct Single Post API
- * A simple endpoint to get a single post by ID
+ * Database-based approach to get a single post by ID
  */
 
 // Enable error reporting for debugging
@@ -21,10 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Define directories
-$baseDir = dirname(__DIR__);
-$blogDataDir = $baseDir . '/blog_data/';
-$postsDir = $baseDir . '/posts/';
+// Include database config and class
+require_once __DIR__ . '/db/config.php';
+require_once __DIR__ . '/db/Database.php';
 
 // Get post ID from URL
 $requestUri = $_SERVER['REQUEST_URI'];
@@ -42,29 +41,54 @@ $postId = preg_replace('/[^a-zA-Z0-9_-]/', '', $postId);
 $useAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
 
 // Function to get post by ID
-function getPostById($id, $useAdmin) {
-    global $postsDir, $blogDataDir;
-    
-    // Determine which directory to use
-    $directory = $useAdmin && file_exists($postsDir) ? $postsDir : $blogDataDir;
-    
-    // Sanitize ID
-    $id = preg_replace('/[^a-zA-Z0-9_-]/', '', $id);
-    
-    // Full path to file
-    $filePath = $directory . $id . '.json';
-    
-    if (file_exists($filePath) && is_readable($filePath)) {
-        $content = file_get_contents($filePath);
-        if ($content) {
-            $post = json_decode($content, true);
-            if ($post) {
-                return $post;
-            }
+function getPostById($id, $useAdmin = false) {
+    try {
+        $db = Database::getInstance();
+        
+        // Build query with condition for published status
+        $query = "SELECT 
+                    p.id, 
+                    p.title, 
+                    p.slug,
+                    p.excerpt,
+                    p.content,
+                    p.image_url AS image, 
+                    p.status,
+                    p.published_at AS date,
+                    u.username AS author,
+                    u.display_name AS author_name
+                  FROM blog_posts p
+                  LEFT JOIN blog_users u ON p.author_id = u.id
+                  WHERE p.id = ?";
+        
+        // Add status check for non-admin requests
+        if (!$useAdmin) {
+            $query .= " AND p.status = 'published'";
         }
+        
+        $post = $db->fetchOne($query, [$id]);
+        
+        if (!$post) {
+            return null;
+        }
+        
+        // Get categories/tags for this post
+        $tagQuery = "SELECT c.name 
+                     FROM blog_categories c
+                     JOIN blog_post_categories pc ON c.id = pc.category_id
+                     WHERE pc.post_id = ?";
+        
+        $tags = $db->fetchColumn($tagQuery, [$id]);
+        $post['tags'] = $tags ? $tags : [];
+        
+        // Convert status to published boolean flag
+        $post['published'] = ($post['status'] === 'published');
+        
+        return $post;
+    } catch (Exception $e) {
+        error_log("Error fetching post: " . $e->getMessage());
+        return null;
     }
-    
-    return null;
 }
 
 // Get the post

@@ -395,6 +395,88 @@
         display: none;
       }
       
+      /* Editor toggle and tabs */
+      .editor-toggle-container {
+        display: flex;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--color-gray-300);
+      }
+      
+      .editor-tab {
+        padding: 0.5rem 1rem;
+        background-color: var(--color-gray-100);
+        border: 1px solid var(--color-gray-300);
+        border-bottom: none;
+        border-radius: 6px 6px 0 0;
+        cursor: pointer;
+        margin-right: 0.5rem;
+      }
+      
+      .editor-tab.active {
+        background-color: white;
+        border-bottom: 1px solid white;
+        margin-bottom: -1px;
+        color: var(--color-primary);
+        font-weight: 500;
+      }
+      
+      /* HTML Editor */
+      #html-editor {
+        display: none;
+        min-height: 300px;
+      }
+      
+      /* Image upload button */
+      .image-upload-btn {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background-color: var(--color-gray-200);
+        border: 1px solid var(--color-gray-300);
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .image-upload-btn:hover {
+        background-color: var(--color-gray-300);
+      }
+      
+      .inserted-images-container {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      
+      .inserted-image {
+        position: relative;
+        width: 150px;
+        border: 1px solid var(--color-gray-300);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      
+      .inserted-image img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+      }
+      
+      .inserted-image-actions {
+        padding: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        background-color: var(--color-gray-100);
+      }
+      
+      .inserted-image-url {
+        font-size: 0.75rem;
+        color: var(--color-gray-700);
+        word-break: break-all;
+      }
+      
       /* Mobile responsiveness */
       @media (max-width: 768px) {
         .admin-container {
@@ -547,8 +629,33 @@
               </div>
               
               <div class="admin-form__group">
-                <label for="post-content" class="admin-form__label">Content (Markdown)</label>
+                <label class="admin-form__label">Content</label>
+                
+                <!-- Editor toggle tabs -->
+                <div class="editor-toggle-container">
+                  <div class="editor-tab active" data-editor="markdown">Markdown</div>
+                  <div class="editor-tab" data-editor="html">HTML</div>
+                </div>
+                
+                <!-- Markdown editor -->
                 <textarea id="post-content" class="admin-form__input admin-form__textarea" rows="10"></textarea>
+                
+                <!-- HTML editor -->
+                <textarea id="html-editor" class="admin-form__input admin-form__textarea" rows="15"></textarea>
+                
+                <!-- Image upload button -->
+                <div class="image-tools">
+                  <button type="button" class="image-upload-btn" id="insert-image-btn">
+                    <i class="fas fa-image"></i> Upload Image
+                  </button>
+                  <input type="file" id="image-upload" style="display: none;" accept="image/*">
+                  <small style="margin-left: 1rem; color: var(--color-gray-500);">Images will be saved to /blog/images/</small>
+                </div>
+                
+                <!-- Display inserted images -->
+                <div class="inserted-images-container" id="inserted-images-container">
+                  <!-- Images will be added here dynamically -->
+                </div>
               </div>
               
               <div class="admin-form__group">
@@ -563,6 +670,15 @@
                 <label for="post-image" class="admin-form__label">Featured Image URL</label>
                 <input type="text" id="post-image" class="admin-form__input" placeholder="https://example.com/image.jpg">
                 <div class="admin-image-upload">
+                  <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" class="admin-btn admin-btn--secondary" id="featured-image-upload-btn">
+                      <i class="fas fa-upload"></i> Upload Featured Image
+                    </button>
+                    <button type="button" class="admin-btn admin-btn--danger" id="remove-featured-image-btn">
+                      <i class="fas fa-trash"></i> Remove Image
+                    </button>
+                  </div>
+                  <input type="file" id="featured-image-input" style="display: none;" accept="image/*">
                   <img id="image-preview" class="admin-image-preview">
                 </div>
               </div>
@@ -613,6 +729,7 @@
       const postsList = document.getElementById('posts-list');
       const editorMessage = document.getElementById('editor-message');
       const tagsContainer = document.getElementById('tags-container');
+      const insertedImagesContainer = document.getElementById('inserted-images-container');
       
       // DOM elements - Form
       const postForm = document.getElementById('post-form');
@@ -620,20 +737,30 @@
       const postTitleInput = document.getElementById('post-title');
       const postExcerptInput = document.getElementById('post-excerpt');
       const postContentInput = document.getElementById('post-content');
+      const htmlEditor = document.getElementById('html-editor');
       const postTagsInput = document.getElementById('post-tags-input');
       const postImageInput = document.getElementById('post-image');
       const postPublishedInput = document.getElementById('post-published');
       const imagePreview = document.getElementById('image-preview');
       
-      // DOM elements - Buttons
+      // DOM elements - Buttons and file inputs
       const newPostBtns = document.querySelectorAll('#new-post-btn, #new-post-btn-2');
       const cancelEditBtn = document.getElementById('cancel-edit-btn');
+      const insertImageBtn = document.getElementById('insert-image-btn');
+      const imageUploadInput = document.getElementById('image-upload');
+      const featuredImageUploadBtn = document.getElementById('featured-image-upload-btn');
+      const featuredImageInput = document.getElementById('featured-image-input');
+      
+      // DOM elements - Editor tabs
+      const editorTabs = document.querySelectorAll('.editor-tab');
       
       // State
       let currentView = 'dashboard';
       let posts = [];
       let currentTags = [];
       let editor = null;
+      let insertedImages = [];
+      let activeEditor = 'markdown'; // markdown or html
       
       // SimpleMDE Markdown editor initialization
       function initMarkdownEditor() {
@@ -647,7 +774,143 @@
           spellChecker: false,
           autofocus: false,
           placeholder: "Write your blog post content here...",
-          toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen"],
+          toolbar: [
+            "bold", "italic", "heading", "|", 
+            "quote", "unordered-list", "ordered-list", "|", 
+            "link", {
+              name: "image",
+              action: function customFunction(editor) {
+                // Trigger image upload instead of default image action
+                imageUploadInput.click();
+              },
+              className: "fa fa-picture-o",
+              title: "Insert Image",
+            }, "|", 
+            "preview", "side-by-side", "fullscreen"
+          ],
+        });
+      }
+      
+      // Switch between markdown and HTML editors
+      function switchEditorMode(mode) {
+        activeEditor = mode;
+        
+        // Update tabs
+        document.querySelectorAll('.editor-tab').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        document.querySelector(`.editor-tab[data-editor="${mode}"]`).classList.add('active');
+        
+        if (mode === 'markdown') {
+          // Show markdown editor, hide html editor
+          editor.codemirror.getWrapperElement().style.display = 'block';
+          htmlEditor.style.display = 'none';
+          
+          // If there was content in HTML editor, convert it to markdown
+          if (htmlEditor.value.trim() !== '') {
+            // In a real implementation, you might want to convert HTML to Markdown
+            // For simplicity, we're just copying the HTML directly
+            editor.value(htmlEditor.value);
+          }
+        } else {
+          // Show html editor, hide markdown editor
+          editor.codemirror.getWrapperElement().style.display = 'none';
+          htmlEditor.style.display = 'block';
+          
+          // Copy content from markdown editor to HTML editor
+          htmlEditor.value = editor.value();
+        }
+      }
+      
+      // Upload an image to the server
+      async function uploadImage(file) {
+        try {
+          // Get API token for authentication
+          const apiToken = await getApiToken();
+          
+          // Create form data
+          const formData = new FormData();
+          formData.append('file', file);
+          
+          // Upload image
+          const response = await fetch(`${API_URL}/upload.php`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiToken}`,
+            },
+            body: formData
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to upload image');
+          }
+          
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          throw error;
+        }
+      }
+      
+      // Insert an image into the editor
+      function insertImageIntoEditor(imageUrl) {
+        if (activeEditor === 'markdown') {
+          // Insert into Markdown editor
+          const cm = editor.codemirror;
+          const output = `![Image](${imageUrl})`;
+          cm.replaceSelection(output);
+        } else {
+          // Insert into HTML editor
+          const output = `<img src="${imageUrl}" alt="Blog image" class="blog-image"/>`;
+          const cursorPos = htmlEditor.selectionStart;
+          htmlEditor.value = 
+            htmlEditor.value.substring(0, cursorPos) + 
+            output + 
+            htmlEditor.value.substring(cursorPos);
+        }
+        
+        // Add to inserted images list
+        insertedImages.push(imageUrl);
+        renderInsertedImages();
+      }
+      
+      // Render inserted images
+      function renderInsertedImages() {
+        insertedImagesContainer.innerHTML = '';
+        
+        insertedImages.forEach((imageUrl, index) => {
+          const imageElement = document.createElement('div');
+          imageElement.className = 'inserted-image';
+          imageElement.innerHTML = `
+            <img src="${imageUrl}" alt="Inserted image">
+            <div class="inserted-image-actions">
+              <button type="button" class="admin-btn admin-btn--small admin-btn--primary insert-again-btn" data-url="${imageUrl}">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button type="button" class="admin-btn admin-btn--small admin-btn--danger remove-image-btn" data-index="${index}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <div class="inserted-image-url">${imageUrl}</div>
+          `;
+          insertedImagesContainer.appendChild(imageElement);
+        });
+        
+        // Add event listeners
+        document.querySelectorAll('.insert-again-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const imageUrl = btn.getAttribute('data-url');
+            insertImageIntoEditor(imageUrl);
+          });
+        });
+        
+        document.querySelectorAll('.remove-image-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const index = parseInt(btn.getAttribute('data-index'));
+            insertedImages.splice(index, 1);
+            renderInsertedImages();
+          });
         });
       }
       
@@ -688,6 +951,7 @@
             if (!editor) {
               initMarkdownEditor();
             }
+            switchEditorMode('markdown'); // Default to markdown editor
             break;
         }
       }
@@ -932,10 +1196,13 @@
         } else {
           postContentInput.value = '';
         }
+        htmlEditor.value = '';
         postImageInput.value = '';
         postPublishedInput.checked = true;
         currentTags = [];
+        insertedImages = [];
         renderTags();
+        renderInsertedImages();
         
         // Clear image preview
         imagePreview.style.display = 'none';
@@ -972,12 +1239,17 @@
             postContentInput.value = post.content;
           }
           
+          htmlEditor.value = post.content;
           postImageInput.value = post.image || '';
           postPublishedInput.checked = post.published;
           
           // Update tags
           currentTags = [...post.tags];
           renderTags();
+          
+          // Clear inserted images list
+          insertedImages = [];
+          renderInsertedImages();
           
           // Show image preview if available
           if (post.image) {
@@ -996,35 +1268,6 @@
       }
       
       // Delete post
-      // Get API token for authentication
-      async function getApiToken() {
-        // In a real application, you would store the token in memory and check expiration
-        // For simplicity, we'll request a new token each time
-        try {
-          const response = await fetch(`${API_URL}/token`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              username: 'admin', // These should be entered by the user in a real app
-              password: 'soft!ware3By4Matt5',
-            }),
-          });
-          
-          if (!response.ok) {
-            throw new Error('Failed to get API token');
-          }
-          
-          const data = await response.json();
-          return data.token;
-        } catch (error) {
-          console.error('Error getting API token:', error);
-          showMessage('Authentication error. Please reload the page.', 'danger');
-          return null;
-        }
-      }
-      
       async function deletePost(postId) {
         try {
           // Get API token for authentication
@@ -1063,6 +1306,35 @@
         }
       }
       
+      // Get API token for authentication
+      async function getApiToken() {
+        // In a real application, you would store the token in memory and check expiration
+        // For simplicity, we'll request a new token each time
+        try {
+          const response = await fetch(`${API_URL}/token`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: 'admin', // These should be entered by the user in a real app
+              password: 'soft!ware3By4Matt5',
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to get API token');
+          }
+          
+          const data = await response.json();
+          return data.token;
+        } catch (error) {
+          console.error('Error getting API token:', error);
+          showMessage('Authentication error. Please reload the page.', 'danger');
+          return null;
+        }
+      }
+      
       // Save post (create or update)
       async function savePost(event) {
         event.preventDefault();
@@ -1071,7 +1343,15 @@
         const postId = postIdInput.value;
         const title = postTitleInput.value;
         const excerpt = postExcerptInput.value;
-        const content = editor ? editor.value() : postContentInput.value;
+        let content = '';
+        
+        // Get content based on active editor
+        if (activeEditor === 'markdown') {
+          content = editor ? editor.value() : postContentInput.value;
+        } else {
+          content = htmlEditor.value;
+        }
+        
         const image = postImageInput.value;
         const published = postPublishedInput.checked;
         
@@ -1244,6 +1524,93 @@
             };
           } else {
             imagePreview.style.display = 'none';
+          }
+        });
+        
+        // Initialize editor tabs
+        editorTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            const editorType = tab.getAttribute('data-editor');
+            switchEditorMode(editorType);
+          });
+        });
+        
+        // Initialize image upload
+        insertImageBtn.addEventListener('click', () => {
+          imageUploadInput.click();
+        });
+        
+        imageUploadInput.addEventListener('change', async (event) => {
+          if (event.target.files.length === 0) return;
+          
+          const file = event.target.files[0];
+          
+          try {
+            // Show loading state
+            insertImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            insertImageBtn.disabled = true;
+            
+            // Upload image
+            const result = await uploadImage(file);
+            
+            // Insert image into editor
+            insertImageIntoEditor(result.url);
+            
+            // Reset file input
+            imageUploadInput.value = '';
+          } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Error uploading image. Please try again.');
+          } finally {
+            // Reset button
+            insertImageBtn.innerHTML = '<i class="fas fa-image"></i> Upload Image';
+            insertImageBtn.disabled = false;
+          }
+        });
+        
+        // Initialize featured image upload
+        featuredImageUploadBtn.addEventListener('click', () => {
+          featuredImageInput.click();
+        });
+        
+        // Initialize remove featured image button
+        const removeFeaturedImageBtn = document.getElementById('remove-featured-image-btn');
+        removeFeaturedImageBtn.addEventListener('click', () => {
+          // Clear the image URL input
+          postImageInput.value = '';
+          
+          // Hide the preview
+          imagePreview.style.display = 'none';
+          imagePreview.src = '';
+        });
+        
+        featuredImageInput.addEventListener('change', async (event) => {
+          if (event.target.files.length === 0) return;
+          
+          const file = event.target.files[0];
+          
+          try {
+            // Show loading state
+            featuredImageUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            featuredImageUploadBtn.disabled = true;
+            
+            // Upload image
+            const result = await uploadImage(file);
+            
+            // Set image URL and show preview
+            postImageInput.value = result.url;
+            imagePreview.src = result.url;
+            imagePreview.style.display = 'block';
+            
+            // Reset file input
+            featuredImageInput.value = '';
+          } catch (error) {
+            console.error('Error uploading featured image:', error);
+            alert('Error uploading featured image. Please try again.');
+          } finally {
+            // Reset button
+            featuredImageUploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Featured Image';
+            featuredImageUploadBtn.disabled = false;
           }
         });
       });

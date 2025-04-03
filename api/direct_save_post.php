@@ -21,20 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Define directories
-$baseDir = dirname(__DIR__);
-$blogDataDir = $baseDir . '/blog_data/';
-$postsDir = $baseDir . '/posts/';
-
-// Check if posts directory exists and create it if not
-if (!file_exists($postsDir)) {
-    mkdir($postsDir, 0755, true);
-}
-
-// Check if blog_data directory exists and create it if not
-if (!file_exists($blogDataDir)) {
-    mkdir($blogDataDir, 0755, true);
-}
+// Include sync_posts utility
+require_once __DIR__ . '/sync_posts.php';
 
 // Get post ID from URL
 $requestUri = $_SERVER['REQUEST_URI'];
@@ -58,58 +46,36 @@ if (!$data) {
     exit;
 }
 
-// Function to save a post
-function savePost($data, $id = null) {
-    global $postsDir, $blogDataDir;
-    
-    // Generate ID if not provided
-    if (!$id && !isset($data['id'])) {
-        $id = uniqid();
-    } elseif (!$id) {
-        $id = $data['id'];
-    }
-    
-    // Set the ID in the data
-    $data['id'] = $id;
-    
-    // Set creation date if not provided
-    if (!isset($data['date'])) {
-        $data['date'] = date('c'); // ISO 8601 format
-    }
-    
-    // Clean ID
-    $id = preg_replace('/[^a-zA-Z0-9_-]/', '', $id);
-    
-    // Path to save the file
-    $filePath = $postsDir . $id . '.json';
-    
-    // Save to posts directory (admin version)
-    $success = file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    
-    if (!$success) {
-        return false;
-    }
-    
-    // If post is published, also save to blog_data
-    if (isset($data['published']) && $data['published']) {
-        $publicPath = $blogDataDir . $id . '.json';
-        file_put_contents($publicPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    }
-    
-    return $data;
-}
-
 // Handle request based on method
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'POST':
         // Create new post
-        $savedPost = savePost($data);
+        $postId = savePostToDatabase($data);
         
-        if ($savedPost) {
-            http_response_code(201); // Created
-            echo json_encode($savedPost);
+        if ($postId) {
+            // Update tags if provided
+            if (isset($data['tags']) && is_array($data['tags'])) {
+                updatePostTags($postId, $data['tags']);
+            }
+            
+            // Get the saved post from database
+            $db = Database::getInstance();
+            $savedPost = $db->fetchOne("SELECT * FROM blog_posts WHERE id = ?", [$postId]);
+            
+            if ($savedPost) {
+                // Format the post data for the response
+                $savedPost['published'] = ($savedPost['status'] === 'published');
+                $savedPost['date'] = $savedPost['published_at'];
+                $savedPost['image'] = $savedPost['image_url'];
+                
+                http_response_code(201); // Created
+                echo json_encode($savedPost);
+            } else {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to retrieve saved post']);
+            }
         } else {
             http_response_code(500);
             echo json_encode(['error' => 'Failed to save post']);
@@ -117,11 +83,35 @@ switch ($method) {
         break;
         
     case 'PUT':
-        // Update existing post
-        $savedPost = savePost($data, $postId);
+        // Set ID for update
+        if (!empty($postId)) {
+            $data['id'] = $postId;
+        }
         
-        if ($savedPost) {
-            echo json_encode($savedPost);
+        // Update existing post
+        $postId = savePostToDatabase($data);
+        
+        if ($postId) {
+            // Update tags if provided
+            if (isset($data['tags']) && is_array($data['tags'])) {
+                updatePostTags($postId, $data['tags']);
+            }
+            
+            // Get the updated post from database
+            $db = Database::getInstance();
+            $savedPost = $db->fetchOne("SELECT * FROM blog_posts WHERE id = ?", [$postId]);
+            
+            if ($savedPost) {
+                // Format the post data for the response
+                $savedPost['published'] = ($savedPost['status'] === 'published');
+                $savedPost['date'] = $savedPost['published_at'];
+                $savedPost['image'] = $savedPost['image_url'];
+                
+                echo json_encode($savedPost);
+            } else {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to retrieve updated post']);
+            }
         } else {
             http_response_code(500);
             echo json_encode(['error' => 'Failed to update post']);

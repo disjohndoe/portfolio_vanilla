@@ -1,7 +1,7 @@
 <?php
 /**
  * Direct Delete Post API
- * A simple endpoint to delete a post with comprehensive error handling
+ * Database-based approach to delete a post
  */
 
 // Enable error reporting for debugging
@@ -21,10 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Define directories
-$baseDir = dirname(__DIR__);
-$blogDataDir = $baseDir . '/blog_data/';
-$postsDir = $baseDir . '/posts/';
+// Include database config and class
+require_once __DIR__ . '/db/config.php';
+require_once __DIR__ . '/db/Database.php';
 
 // Get post ID from URL
 $requestUri = $_SERVER['REQUEST_URI'];
@@ -43,39 +42,23 @@ if ($postId === 'direct_delete_post.php' && isset($_GET['id'])) {
 // Clean post ID (security)
 $postId = preg_replace('/[^a-zA-Z0-9_-]/', '', $postId);
 
-// Function to delete a post
+// Function to delete a post from the database
 function deletePost($id) {
-    global $postsDir, $blogDataDir;
-    
-    // Clean ID
-    $id = preg_replace('/[^a-zA-Z0-9_-]/', '', $id);
-    
-    // Path to admin and public files
-    $adminPath = $postsDir . $id . '.json';
-    $publicPath = $blogDataDir . $id . '.json';
-    
-    $adminDeleted = true;
-    $publicDeleted = true;
-    
-    // Delete from admin directory
-    if (file_exists($adminPath)) {
-        $adminDeleted = unlink($adminPath);
+    try {
+        $db = Database::getInstance();
+        
+        // First, delete associations in the junction table
+        $db->query("DELETE FROM blog_post_categories WHERE post_id = ?", [$id]);
+        
+        // Then delete the post itself
+        $result = $db->query("DELETE FROM blog_posts WHERE id = ?", [$id]);
+        
+        // Check if any rows were affected
+        return $result->rowCount() > 0;
+    } catch (Exception $e) {
+        error_log("Error deleting post: " . $e->getMessage());
+        return false;
     }
-    
-    // Delete from public directory
-    if (file_exists($publicPath)) {
-        $publicDeleted = unlink($publicPath);
-    }
-    
-    return [
-        'success' => $adminDeleted && $publicDeleted,
-        'details' => [
-            'admin_file_existed' => file_exists($adminPath) ? 'Yes' : 'No',
-            'admin_file_deleted' => $adminDeleted ? 'Yes' : 'No',
-            'public_file_existed' => file_exists($publicPath) ? 'Yes' : 'No',
-            'public_file_deleted' => $publicDeleted ? 'Yes' : 'No'
-        ]
-    ];
 }
 
 // Log the request for debugging
@@ -96,13 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         exit;
     }
     
-    $result = deletePost($postId);
+    $success = deletePost($postId);
     
-    if ($result['success']) {
-        echo json_encode(['success' => true, 'message' => "Post $postId deleted successfully", 'details' => $result['details']]);
+    if ($success) {
+        echo json_encode(['success' => true, 'message' => "Post $postId deleted successfully"]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => "Failed to delete post $postId", 'details' => $result['details']]);
+        echo json_encode(['error' => "Failed to delete post $postId"]);
     }
 } else {
     http_response_code(405); // Method Not Allowed

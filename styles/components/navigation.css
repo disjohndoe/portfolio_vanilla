@@ -1,0 +1,16 @@
+/* Navigation styling 
+   This file contains additional styles for the consistent navigation */
+
+/* Active link highlighting */
+.header__link a.active {
+  color: var(--clr-primary);
+}
+
+.mobile-nav__link.active {
+  color: var(--clr-primary);
+}
+
+/* Hover states for navigation */
+.header__link a:hover {
+  color: var(--clr-primary);
+}

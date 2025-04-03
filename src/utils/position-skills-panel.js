@@ -18,6 +18,27 @@ const positionSkillsPanel = () => {
     const isMobile = window.innerWidth <= 600;
     if (overallWrapper) {
       overallWrapper.style.flexDirection = isMobile ? 'column' : 'row';
+      
+      // Set the globe container height based on screen size
+      const globeContainer = document.querySelector('.globe-container');
+      if (globeContainer) {
+        globeContainer.style.height = isMobile ? '450px' : '650px';
+      }
+      
+      // Adjust the panel height for mobile
+      if (skillsInfoPanel) {
+        skillsInfoPanel.style.maxHeight = isMobile ? '300px' : '650px';
+      }
+      
+      // Adjust canvas size
+      const canvas = document.querySelector('.skills-globe');
+      if (canvas) {
+        if (isMobile) {
+          canvas.style.height = '450px';
+        } else {
+          canvas.style.height = '650px';
+        }
+      }
     }
   };
   

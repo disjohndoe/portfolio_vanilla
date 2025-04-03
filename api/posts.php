@@ -4,10 +4,19 @@ if (!function_exists('sanitizeOutput')) {
     require_once 'security.php';
 }
 
+// Include blog constants
+require_once 'blog_constants.php';
+
 // Include the post logger
-require_once __DIR__ . '/db/config.php';
-require_once __DIR__ . '/db/Database.php';
-require_once __DIR__ . '/db/PostLogger.php';
+if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SERVER_ADDR'] === '127.0.0.1') {
+    // Use DummyLogger for local development
+    require_once __DIR__ . '/db/DummyLogger.php';
+} else {
+    // Use real database logger in production
+    require_once __DIR__ . '/db/config.php';
+    require_once __DIR__ . '/db/Database.php';
+    require_once __DIR__ . '/db/PostLogger.php';
+}
 
 // Initialize the post logger
 $postLogger = new PostLogger();

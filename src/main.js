@@ -11,22 +11,40 @@ import '../styles/components/footer.css';
 import '../styles/components/mobile-nav.css';
 import '../styles/components/three-effects.css';
 import '../styles/components/skills-panel.css';
+import '../styles/components/loader.css';
+import '../styles/components/navigation.css';
 import '../styles/utils.css';
 
 // Import utilities
 import mobileNav from './utils/mobile-nav';
+import { setupPage } from './utils/page-setup';
 import darkMode from './utils/dark-mode';
 import lazyLoading from './utils/lazy-loading';
 import animations from './utils/animations';
+import loader from './utils/loader';
 // import fireCursor from './utils/fire-cursor';
 import threeBackground from './utils/three-background';
 import skillsGlobe from './utils/skills-globe';
 import projectModel from './utils/project-model';
 import positionSkillsPanel from './utils/position-skills-panel';
 
-// Initialize basic components first
-mobileNav();
-darkMode();
+// Initialize loader first
+loader();
+
+// Set up consistent navigation based on current page
+const currentPath = window.location.pathname;
+let currentPage = 'home';
+
+if (currentPath.includes('blog.html')) {
+  currentPage = 'blog';
+} else if (currentPath.includes('blog-post.html')) {
+  currentPage = 'blog';
+}
+
+// Initialize page navigation (including mobile nav and dark mode)
+setupPage(currentPage);
+
+// Initialize other components
 lazyLoading();
 animations();
 // fireCursor();

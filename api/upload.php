@@ -9,6 +9,16 @@ if (!isApiAuthenticated()) {
     exit;
 }
 
+// The BLOG_IMAGES_DIR constant should be defined elsewhere
+if (!defined('BLOG_IMAGES_DIR')) {
+    define('BLOG_IMAGES_DIR', dirname(__DIR__) . '/blog_data/images/');
+    
+    // Ensure the directory exists
+    if (!file_exists(BLOG_IMAGES_DIR)) {
+        mkdir(BLOG_IMAGES_DIR, 0755, true);
+    }
+}
+
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405); // Method Not Allowed

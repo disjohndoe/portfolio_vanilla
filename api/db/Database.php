@@ -117,4 +117,16 @@ class Database {
         $result = $stmt->fetch(PDO::FETCH_NUM);
         return $result !== false ? $result[0] : null;
     }
+    
+    /**
+     * Execute a SELECT and fetch a single column
+     * 
+     * @param string $query SQL query
+     * @param array $params Parameters for the query
+     * @return array The fetched column values
+     */
+    public function fetchColumn($query, $params = []) {
+        $stmt = $this->query($query, $params);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
 }

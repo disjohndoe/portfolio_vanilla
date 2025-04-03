@@ -315,19 +315,24 @@ const skillsGlobe = () => {
   scene.add(directionalLight);
   
   const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-  camera.position.z = 6.5;
+  camera.position.z = window.innerWidth <= 600 ? 8.5 : 6.5; // Responsive camera position
   
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
   
-  // Set canvas to fill its container
+  // Set canvas to fill its container with responsive behavior
   canvas.style.position = 'absolute';
   canvas.style.top = '0';
   canvas.style.left = '0';
   canvas.style.width = '100%';
   canvas.style.height = '100%';
   canvas.style.zIndex = '101';
+  
+  // Set initial camera position based on screen size
+  if (window.innerWidth <= 600) {
+    camera.position.z = 8.5; // More zoom out on mobile for better view
+  }
   
   // Create a sphere for the globe
   const globeGeometry = new THREE.SphereGeometry(2.5, 32, 32);
@@ -918,6 +923,30 @@ const skillsGlobe = () => {
     camera.aspect = newWidth / newHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(newWidth, newHeight);
+    
+    // Adjust camera position based on screen size
+    if (window.innerWidth <= 600) {
+      camera.position.z = 8.5; // More zoom out on mobile for better view
+    } else {
+      camera.position.z = 6.5; // Default position for larger screens
+    }
+    
+    // Update the info panel and globe container height for mobile
+    if (window.innerWidth <= 600) {
+      if (globeContainer) {
+        globeContainer.style.height = '450px';
+      }
+      if (skillsInfo) {
+        skillsInfo.style.maxHeight = '300px';
+      }
+    } else {
+      if (globeContainer) {
+        globeContainer.style.height = '650px';
+      }
+      if (skillsInfo) {
+        skillsInfo.style.maxHeight = '650px';
+      }
+    }
   });
   
   // Initial resize to make sure everything is sized correctly

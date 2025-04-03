@@ -12,6 +12,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.2/three.min.js"></script>
     <title>Dev Portfolio - Hrvoje Matosevic</title>
     <meta name="description" content="This website is a back-end developer gone full-stack portfolio. Here I'll represent my developer's references, latest work projects and my resume." />
+    <!-- Use Vite's module import instead of hardcoded path -->
+    <script type="module" src="./src/main.js"></script>
   </head>
   <body>
   <header class="header container">
@@ -23,19 +25,22 @@
         </li>
         <li class="header__link">
           <a href="#featured">My Work</a>
+        </li>
         <li class="header__link">
-          <a href="mailto:hrvoje.matos@gmail.com?subject=Hire Your Own Personal Dev - Hrvoje">Contact</a>
+          <a href="blog.html">Blog</a>
+        </li>
+        <li class="header__link">
+          <a href="#contact">Contact</a>
         </li>
         <li class="header__line">
         </li>
         <li>
           <button id="theme-toggle" class="header__sun header__right">
             <i class="fas fa-sun"></i>
+            <i class="fas fa-moon"></i>
           </button>
         </li>
-        <li>
-          <a class="header__resume btn" href="https://docs.google.com/document/d/10Hsqj77TU0mlnabOsM-vtufpVTKeOMWb/edit?usp=sharing&ouid=116524350403006719529&rtpof=true&sd=true" target="_blank">My Resume</a>
-        </li>
+
       </ul>
       <button class="header__bars">
         <i class="fas fa-bars"></i>
@@ -56,17 +61,19 @@
         <a class="mobile-nav__link" href="#featured">Work</a>
       </li>
       <li>
+        <a class="mobile-nav__link" href="blog.html">Blog</a>
+      </li>
+      <li>
         <a class="mobile-nav__link" href="#contact">Contact</a>
       </li>
       <li class="mobile-nav__link-line"></li>
       <li>
         <button id="theme-toggle" class="mobile-nav__sun">
           <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
         </button>
       </li>
-      <li>
-        <a class="mobile-nav__btn btn" href="https://docs.google.com/document/d/10Hsqj77TU0mlnabOsM-vtufpVTKeOMWb/edit?usp=sharing&ouid=116524350403006719529&rtpof=true&sd=true" target="_blank">Resume</a>
-      </li>
+
     </ul>
     </nav>
   </div>
@@ -77,20 +84,7 @@
       <h2 class="hero__subtitle">Hello, my name is Hrvoje <span class="hero__wave">👋</span></h2>
       <h1 class="hero__title">I'm a Full-Stack <br /> Developer.</h1>
       <p class="hero__description">As an experienced <strong>Full-Stack</strong> web developer, I'm focused on creating amazing digital experiences with code. I have expertise in both full-stack development and <strong>UI/UX design</strong>, and I pay high attention to detail to ensure everything looks and works perfectly in the final product.</p>
-      <div class="hero__cta">
-        <a class="hero__btn btn" href="mailto:hrvoje.matos@gmail.com?subject=Hire Your Own Personal Dev - Hrvoje">Let's chat</a>
-        <div class="hero__social">
-          <a class="hero__social-link" href="https://github.com/disjohndoe" target="_blank">
-            <i class="fab fa-github"></i>
-          </a>
-          <a class="hero__social-link" href="#" target="_blank">
-            <i class="fab fa-linkedin-in"></i>
-          </a>
-          <a class="hero__social-link" href="#" target="_blank">
-            <i class="fab fa-twitter"></i>
-          </a>
-        </div>
-      </div>
+
     </div>
     <div class="hero__image-container">
       <img class="hero__img" src="/hero_profile.jpg" alt="Developer profile picture">
@@ -230,8 +224,9 @@
     <h3 class="contact__title">Get In Touch</h3>
     <p class="contact__description">Hey there, whether you're kickstarting a new project, want to chat about some exciting business ventures, or simply fancy saying "zdravo" (that's "hi" in Croatian), my inbox is open and awaiting your messages! Drop me a line, and I'll reply to you quicker than you can say "ćevapčić." Let's make some digital magic happen!</p>
     <div class="contact__options">
-      <a class="contact__btn btn" href="mailto:hrvoje.matos@gmail.com?subject=Hire Your Own Personal Dev - Hrvoje" target="_blank"><i class="far fa-envelope"></i> Email Me</a>
+
       <div class="social-links">
+        <a href="mailto:hrvoje.matos@gmail.com?subject=Hire Your Own Personal Dev - Hrvoje" class="social-link"><i class="far fa-envelope"></i></a>
         <a href="https://github.com/disjohndoe" target="_blank" class="social-link"><i class="fab fa-github"></i></a>
         <a href="#" target="_blank" class="social-link"><i class="fab fa-linkedin"></i></a>
         <a href="#" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>
@@ -251,6 +246,6 @@
       <a href="#contact" class="footer__link">Contact</a>
     </div>
   </footer>
-  <script type="module" src="./src/main.js"></script>
+  
 </body>
 </html>

@@ -89,10 +89,31 @@
   padding: 1.5rem;
   border-radius: 50%;
   transition: all var(--transition-fast);
+  position: relative;
 }
 
 .mobile-nav__sun i {
   font-size: var(--size-2xl); /* Larger icon */
+  position: absolute;
+  transition: opacity var(--transition-fast);
+}
+
+/* Show sun icon in dark mode (default), hide moon icon */
+.mobile-nav__sun i.fa-sun {
+  opacity: 1;
+}
+
+.mobile-nav__sun i.fa-moon {
+  opacity: 0;
+}
+
+/* Show moon icon in light mode, hide sun icon */
+.light-mode .mobile-nav__sun i.fa-sun {
+  opacity: 0;
+}
+
+.light-mode .mobile-nav__sun i.fa-moon {
+  opacity: 1;
 }
 
 .mobile-nav__sun:hover {

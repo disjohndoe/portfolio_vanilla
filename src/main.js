@@ -11,6 +11,7 @@ import '../styles/components/footer.css';
 import '../styles/components/mobile-nav.css';
 import '../styles/components/three-effects.css';
 import '../styles/components/skills-panel.css';
+import '../styles/components/loader.css';
 import '../styles/utils.css';
 
 // Import utilities
@@ -18,13 +19,17 @@ import mobileNav from './utils/mobile-nav';
 import darkMode from './utils/dark-mode';
 import lazyLoading from './utils/lazy-loading';
 import animations from './utils/animations';
+import loader from './utils/loader';
 // import fireCursor from './utils/fire-cursor';
 import threeBackground from './utils/three-background';
 import skillsGlobe from './utils/skills-globe';
 import projectModel from './utils/project-model';
 import positionSkillsPanel from './utils/position-skills-panel';
 
-// Initialize basic components first
+// Initialize loader first
+loader();
+
+// Initialize basic components next
 mobileNav();
 darkMode();
 lazyLoading();

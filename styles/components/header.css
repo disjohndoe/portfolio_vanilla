@@ -61,6 +61,26 @@
 
 .header__sun i {
   font-size: var(--size-xl);
+  position: absolute;
+  transition: opacity var(--transition-fast);
+}
+
+/* Show sun icon in dark mode (default), hide moon icon */
+.header__sun i.fa-sun {
+  opacity: 1;
+}
+
+.header__sun i.fa-moon {
+  opacity: 0;
+}
+
+/* Show moon icon in light mode, hide sun icon */
+.light-mode .header__sun i.fa-sun {
+  opacity: 0;
+}
+
+.light-mode .header__sun i.fa-moon {
+  opacity: 1;
 }
 
 .header__sun:hover {

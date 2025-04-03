@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="en">
+<!-- IMPORTANT: This file should only be accessed through admin_auth.php -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/dev.png" type="image/x-icon">
+    <title>Blog Admin | Hrvoje Matosevic</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SimpleMDE for Markdown editing -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    
+    <style>
+      :root {
+        --color-primary: #4f46e5;
+        --color-primary-hover: #4338ca;
+        --color-success: #10b981;
+        --color-success-hover: #059669;
+        --color-danger: #ef4444;
+        --color-danger-hover: #dc2626;
+        --color-warning: #f59e0b;
+        --color-warning-hover: #d97706;
+        --color-gray-50: #f9fafb;
+        --color-gray-100: #f3f4f6;
+        --color-gray-200: #e5e7eb;
+        --color-gray-300: #d1d5db;
+        --color-gray-400: #9ca3af;
+        --color-gray-500: #6b7280;
+        --color-gray-600: #4b5563;
+        --color-gray-700: #374151;
+        --color-gray-800: #1f2937;
+        --color-gray-900: #111827;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--color-gray-100);
+        color: var(--color-gray-800);
+        line-height: 1.5;
+      }
+      
+      /* Layout */
+      .admin-container {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        min-height: 100vh;
+      }
+      
+      .admin-sidebar {
+        background-color: var(--color-gray-800);
+        color: white;
+        padding: 1.5rem;
+      }
+      
+      .admin-logo {
+        margin-bottom: 2rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .admin-main {
+        padding: 2rem;
+      }
+      
+      /* Navigation */
+      .admin-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .admin-nav__item {
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        color: var(--color-gray-300);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.2s ease;
+      }
+      
+      .admin-nav__item:hover {
+        background-color: var(--color-gray-700);
+        color: white;
+      }
+      
+      .admin-nav__item.active {
+        background-color: var(--color-primary);
+        color: white;
+      }
+      
+      /* Header */
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+      
+      .admin-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      
+      /* Cards */
+      .admin-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .admin-card__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      
+      .admin-card__title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+      
+      /* Buttons */
+      .admin-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+        transition: background-color 0.2s ease;
+      }
+      
+      .admin-btn--primary {
+        background-color: var(--color-primary);
+        color: white;
+      }
+      
+      .admin-btn--primary:hover {
+        background-color: var(--color-primary-hover);
+      }
+      
+      .admin-btn--success {
+        background-color: var(--color-success);
+        color: white;
+      }
+      
+      .admin-btn--success:hover {
+        background-color: var(--color-success-hover);
+      }
+      
+      .admin-btn--danger {
+        background-color: var(--color-danger);
+        color: white;
+      }
+      
+      .admin-btn--danger:hover {
+        background-color: var(--color-danger-hover);
+      }
+      
+      .admin-btn--warning {
+        background-color: var(--color-warning);
+        color: white;
+      }
+      
+      .admin-btn--warning:hover {
+        background-color: var(--color-warning-hover);
+      }
+      
+      .admin-btn--small {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+      }
+      
+      /* Tables */
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      
+      .admin-table th,
+      .admin-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--color-gray-200);
+      }
+      
+      .admin-table th {
+        font-weight: 600;
+        color: var(--color-gray-500);
+        background-color: var(--color-gray-50);
+      }
+      
+      .admin-table tr:hover {
+        background-color: var(--color-gray-50);
+      }
+      
+      .admin-table__actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      /* Status badges */
+      .admin-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+      
+      .admin-badge--success {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--color-success);
+      }
+      
+      .admin-badge--warning {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--color-warning);
+      }
+      
+      /* Forms */
+      .admin-form {
+        display: grid;
+        gap: 1.5rem;
+      }
+      
+      .admin-form__group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .admin-form__label {
+        font-weight: 500;
+        color: var(--color-gray-700);
+      }
+      
+      .admin-form__input,
+      .admin-form__select {
+        padding: 0.75rem;
+        border: 1px solid var(--color-gray-300);
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 1rem;
+      }
+      
+      .admin-form__input:focus,
+      .admin-form__select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+      
+      .admin-form__textarea {
+        min-height: 150px;
+        resize: vertical;
+      }
+      
+      .admin-form__checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .admin-form__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      
+      /* Tags input */
+      .admin-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+      
+      .admin-tag {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        background-color: var(--color-gray-100);
+        border-radius: 4px;
+        font-size: 0.875rem;
+      }
+      
+      .admin-tag__remove {
+        cursor: pointer;
+        color: var(--color-gray-500);
+        display: flex;
+        align-items: center;
+      }
+      
+      .admin-tag__remove:hover {
+        color: var(--color-danger);
+      }
+      
+      /* Alerts */
+      .admin-alert {
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+      }
+      
+      .admin-alert--success {
+        background-color: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: var(--color-success);
+      }
+      
+      .admin-alert--danger {
+        background-color: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: var(--color-danger);
+      }
+      
+      /* Loading */
+      .admin-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        color: var(--color-gray-500);
+      }
+      
+      .admin-loading i {
+        margin-right: 0.5rem;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Empty state */
+      .admin-empty {
+        text-align: center;
+        padding: 3rem 0;
+        color: var(--color-gray-500);
+      }
+      
+      .admin-empty__icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--color-gray-300);
+      }
+      
+      .admin-empty__title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--color-gray-700);
+      }
+      
+      /* Image upload */
+      .admin-image-upload {
+        margin-top: 0.5rem;
+      }
+      
+      .admin-image-preview {
+        width: 100%;
+        max-width: 300px;
+        max-height: 200px;
+        object-fit: cover;
+        border-radius: 6px;
+        margin-top: 0.5rem;
+        display: none;
+      }
+      
+      /* Mobile responsiveness */
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+        
+        .admin-sidebar {
+          display: none;
+        }
+        
+        .admin-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+        
+        .admin-card__header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+        
+        .admin-form__actions {
+          flex-direction: column;
+        }
+        
+        .admin-btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <div class="admin-sidebar">
+        <div class="admin-logo">
+          <i class="fas fa-code"></i> Blog Admin
+        </div>
+        <nav class="admin-nav">
+          <a href="#dashboard" class="admin-nav__item active" data-view="dashboard">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+          <a href="#posts" class="admin-nav__item" data-view="posts">
+            <i class="fas fa-file-alt"></i> All Posts
+          </a>
+          <a href="#new" class="admin-nav__item" data-view="editor" data-action="new">
+            <i class="fas fa-plus"></i> New Post
+          </a>
+          <a href="/blog.html" class="admin-nav__item" target="_blank">
+            <i class="fas fa-external-link-alt"></i> View Blog
+          </a>
+          <a href="api/login_protection/view_logs.php" class="admin-nav__item" target="_blank">
+            <i class="fas fa-shield-alt"></i> Security Logs
+          </a>
+          <a href="api/post_logs_simple.php" class="admin-nav__item" target="_blank">
+            <i class="fas fa-history"></i> Post Logs (Simple)
+          </a>
+          <a href="api/post_logs_diagnostic.php" class="admin-nav__item" target="_blank">
+            <i class="fas fa-stethoscope"></i> Diagnostics
+          </a>
+          <a href="/" class="admin-nav__item">
+            <i class="fas fa-home"></i> Back to Website
+          </a>
+        </nav>
+      </div>
+      
+      <!-- Main content -->
+      <div class="admin-main">
+        <!-- Dashboard view -->
+        <div id="dashboard-view">
+          <header class="admin-header">
+            <h1 class="admin-title">Dashboard</h1>
+            <button class="admin-btn admin-btn--primary" id="new-post-btn">
+              <i class="fas fa-plus"></i> New Post
+            </button>
+          </header>
+          
+          <!-- Stats -->
+          <div class="admin-card">
+            <div class="admin-card__header">
+              <h2 class="admin-card__title">Blog Stats</h2>
+            </div>
+            <div class="admin-stats" id="blog-stats">
+              <div class="admin-loading">
+                <i class="fas fa-spinner"></i> Loading stats...
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recent posts -->
+          <div class="admin-card">
+            <div class="admin-card__header">
+              <h2 class="admin-card__title">Recent Posts</h2>
+              <a href="#posts" class="admin-btn admin-btn--primary" data-view="posts">
+                View All
+              </a>
+            </div>
+            <div id="recent-posts">
+              <div class="admin-loading">
+                <i class="fas fa-spinner"></i> Loading recent posts...
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Posts view -->
+        <div id="posts-view" style="display: none;">
+          <header class="admin-header">
+            <h1 class="admin-title">All Posts</h1>
+            <button class="admin-btn admin-btn--primary" id="new-post-btn-2">
+              <i class="fas fa-plus"></i> New Post
+            </button>
+          </header>
+          
+          <div class="admin-card">
+            <div class="admin-card__header">
+              <h2 class="admin-card__title">Blog Posts</h2>
+            </div>
+            <div id="posts-list">
+              <div class="admin-loading">
+                <i class="fas fa-spinner"></i> Loading posts...
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Editor view -->
+        <div id="editor-view" style="display: none;">
+          <header class="admin-header">
+            <h1 class="admin-title" id="editor-title">New Post</h1>
+          </header>
+          
+          <!-- Message alert -->
+          <div id="editor-message"></div>
+          
+          <div class="admin-card">
+            <form id="post-form" class="admin-form">
+              <input type="hidden" id="post-id">
+              
+              <div class="admin-form__group">
+                <label for="post-title" class="admin-form__label">Post Title</label>
+                <input type="text" id="post-title" class="admin-form__input" required>
+              </div>
+              
+              <div class="admin-form__group">
+                <label for="post-excerpt" class="admin-form__label">Excerpt</label>
+                <textarea id="post-excerpt" class="admin-form__input admin-form__textarea" rows="3" required></textarea>
+              </div>
+              
+              <div class="admin-form__group">
+                <label for="post-content" class="admin-form__label">Content (Markdown)</label>
+                <textarea id="post-content" class="admin-form__input admin-form__textarea" rows="10"></textarea>
+              </div>
+              
+              <div class="admin-form__group">
+                <label class="admin-form__label">Tags</label>
+                <div class="admin-form__tags-input">
+                  <input type="text" id="post-tags-input" class="admin-form__input" placeholder="Add a tag and press Enter">
+                  <div class="admin-tags" id="tags-container"></div>
+                </div>
+              </div>
+              
+              <div class="admin-form__group">
+                <label for="post-image" class="admin-form__label">Featured Image URL</label>
+                <input type="text" id="post-image" class="admin-form__input" placeholder="https://example.com/image.jpg">
+                <div class="admin-image-upload">
+                  <img id="image-preview" class="admin-image-preview">
+                </div>
+              </div>
+              
+              <div class="admin-form__group">
+                <div class="admin-form__checkbox">
+                  <input type="checkbox" id="post-published" checked>
+                  <label for="post-published">Published</label>
+                </div>
+              </div>
+              
+              <div class="admin-form__actions">
+                <button type="button" class="admin-btn admin-btn--warning" id="cancel-edit-btn">
+                  Cancel
+                </button>
+                <button type="submit" class="admin-btn admin-btn--success">
+                  <i class="fas fa-save"></i> Save Post
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      // Security check - redirect to admin_auth.php if CSRF token is missing
+      if (!sessionStorage.getItem('csrfToken')) {
+        window.location.href = 'admin_auth.php';
+      }
+      
+      // Constants
+      // Determine if we're in development or production
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const API_URL = isLocalhost ? 'http://localhost:8000/api' : '/api'; // Use full URL in dev, relative in prod
+      
+      // Get CSRF token from session storage
+      const CSRF_TOKEN = sessionStorage.getItem('csrfToken');
+      
+      // DOM elements - Views
+      const dashboardView = document.getElementById('dashboard-view');
+      const postsView = document.getElementById('posts-view');
+      const editorView = document.getElementById('editor-view');
+      
+      // DOM elements - Content containers
+      const blogStats = document.getElementById('blog-stats');
+      const recentPosts = document.getElementById('recent-posts');
+      const postsList = document.getElementById('posts-list');
+      const editorMessage = document.getElementById('editor-message');
+      const tagsContainer = document.getElementById('tags-container');
+      
+      // DOM elements - Form
+      const postForm = document.getElementById('post-form');
+      const postIdInput = document.getElementById('post-id');
+      const postTitleInput = document.getElementById('post-title');
+      const postExcerptInput = document.getElementById('post-excerpt');
+      const postContentInput = document.getElementById('post-content');
+      const postTagsInput = document.getElementById('post-tags-input');
+      const postImageInput = document.getElementById('post-image');
+      const postPublishedInput = document.getElementById('post-published');
+      const imagePreview = document.getElementById('image-preview');
+      
+      // DOM elements - Buttons
+      const newPostBtns = document.querySelectorAll('#new-post-btn, #new-post-btn-2');
+      const cancelEditBtn = document.getElementById('cancel-edit-btn');
+      
+      // State
+      let currentView = 'dashboard';
+      let posts = [];
+      let currentTags = [];
+      let editor = null;
+      
+      // SimpleMDE Markdown editor initialization
+      function initMarkdownEditor() {
+        if (editor) {
+          editor.toTextArea();
+          editor = null;
+        }
+        
+        editor = new SimpleMDE({
+          element: postContentInput,
+          spellChecker: false,
+          autofocus: false,
+          placeholder: "Write your blog post content here...",
+          toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen"],
+        });
+      }
+      
+      // View navigation
+      function showView(viewName, action = null) {
+        // Hide all views
+        dashboardView.style.display = 'none';
+        postsView.style.display = 'none';
+        editorView.style.display = 'none';
+        
+        // Update active nav item
+        document.querySelectorAll('.admin-nav__item').forEach(item => {
+          item.classList.remove('active');
+        });
+        
+        const navItem = document.querySelector(`.admin-nav__item[data-view="${viewName}"]`);
+        if (navItem) {
+          navItem.classList.add('active');
+        }
+        
+        // Show selected view
+        currentView = viewName;
+        
+        switch (viewName) {
+          case 'dashboard':
+            dashboardView.style.display = 'block';
+            loadDashboard();
+            break;
+          case 'posts':
+            postsView.style.display = 'block';
+            loadPosts();
+            break;
+          case 'editor':
+            editorView.style.display = 'block';
+            if (action === 'new') {
+              resetEditor();
+            }
+            if (!editor) {
+              initMarkdownEditor();
+            }
+            break;
+        }
+      }
+      
+      // Load dashboard data
+      async function loadDashboard() {
+        try {
+          // Get API token for authentication
+          const apiToken = await getApiToken();
+          
+          const response = await fetch(`${API_URL}/posts?admin=true`, {
+            headers: {
+              'Authorization': `Bearer ${apiToken}`
+            }
+          });
+          if (!response.ok) throw new Error('Failed to fetch posts');
+          
+          posts = await response.json();
+          
+          // Update stats
+          const publishedCount = posts.filter(post => post.published).length;
+          const draftCount = posts.length - publishedCount;
+          
+          blogStats.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+              <div style="background-color: #e0f2fe; padding: 1.5rem; border-radius: 8px;">
+                <div style="font-size: 0.875rem; color: #0369a1;">Total Posts</div>
+                <div style="font-size: 2rem; font-weight: 700; margin-top: 0.5rem;">${posts.length}</div>
+              </div>
+              <div style="background-color: #dcfce7; padding: 1.5rem; border-radius: 8px;">
+                <div style="font-size: 0.875rem; color: #15803d;">Published</div>
+                <div style="font-size: 2rem; font-weight: 700; margin-top: 0.5rem;">${publishedCount}</div>
+              </div>
+              <div style="background-color: #fef3c7; padding: 1.5rem; border-radius: 8px;">
+                <div style="font-size: 0.875rem; color: #b45309;">Drafts</div>
+                <div style="font-size: 2rem; font-weight: 700; margin-top: 0.5rem;">${draftCount}</div>
+              </div>
+            </div>
+          `;
+          
+          // Load recent posts
+          if (posts.length === 0) {
+            recentPosts.innerHTML = `
+              <div class="admin-empty">
+                <div class="admin-empty__icon"><i class="fas fa-file-alt"></i></div>
+                <h3 class="admin-empty__title">No posts yet</h3>
+                <p>Create your first blog post to get started.</p>
+                <button class="admin-btn admin-btn--primary" id="empty-new-post-btn" style="margin-top: 1rem;">
+                  <i class="fas fa-plus"></i> New Post
+                </button>
+              </div>
+            `;
+            
+            document.getElementById('empty-new-post-btn').addEventListener('click', () => {
+              showView('editor', 'new');
+            });
+            
+            return;
+          }
+          
+          // Show the 5 most recent posts
+          const recentPostsList = posts.slice(0, 5);
+          
+          recentPosts.innerHTML = `
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${recentPostsList.map(post => `
+                  <tr>
+                    <td>${post.title}</td>
+                    <td>${new Date(post.date).toLocaleDateString()}</td>
+                    <td>
+                      <span class="admin-badge admin-badge--${post.published ? 'success' : 'warning'}">
+                        ${post.published ? 'Published' : 'Draft'}
+                      </span>
+                    </td>
+                    <td class="admin-table__actions">
+                      <button class="admin-btn admin-btn--primary admin-btn--small edit-post-btn" data-id="${post.id}">
+                        Edit
+                      </button>
+                      <a href="/blog-post.html?id=${post.id.replace(/^[^a-zA-Z0-9_-]+|[^a-zA-Z0-9_-]+$/g, '')}" target="_blank" class="admin-btn admin-btn--small">
+                        View
+                      </a>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+          
+          // Add event listeners to edit buttons
+          document.querySelectorAll('.edit-post-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const postId = btn.getAttribute('data-id');
+              editPost(postId);
+            });
+          });
+        } catch (error) {
+          console.error('Error loading dashboard:', error);
+          blogStats.innerHTML = `
+            <div class="admin-alert admin-alert--danger">
+              Error loading blog stats. Please try again later.
+            </div>
+          `;
+          recentPosts.innerHTML = `
+            <div class="admin-alert admin-alert--danger">
+              Error loading recent posts. Please try again later.
+            </div>
+          `;
+        }
+      }
+      
+      // Load posts list
+      async function loadPosts() {
+        try {
+          // Get API token for authentication
+          const apiToken = await getApiToken();
+          
+          const response = await fetch(`${API_URL}/posts?admin=true`, {
+            headers: {
+              'Authorization': `Bearer ${apiToken}`
+            }
+          });
+          if (!response.ok) throw new Error('Failed to fetch posts');
+          
+          posts = await response.json();
+          
+          if (posts.length === 0) {
+            postsList.innerHTML = `
+              <div class="admin-empty">
+                <div class="admin-empty__icon"><i class="fas fa-file-alt"></i></div>
+                <h3 class="admin-empty__title">No posts yet</h3>
+                <p>Create your first blog post to get started.</p>
+                <button class="admin-btn admin-btn--primary" id="empty-list-new-post-btn" style="margin-top: 1rem;">
+                  <i class="fas fa-plus"></i> New Post
+                </button>
+              </div>
+            `;
+            
+            document.getElementById('empty-list-new-post-btn').addEventListener('click', () => {
+              showView('editor', 'new');
+            });
+            
+            return;
+          }
+          
+          postsList.innerHTML = `
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${posts.map(post => `
+                  <tr>
+                    <td>${post.title}</td>
+                    <td>${new Date(post.date).toLocaleDateString()}</td>
+                    <td>
+                      <span class="admin-badge admin-badge--${post.published ? 'success' : 'warning'}">
+                        ${post.published ? 'Published' : 'Draft'}
+                      </span>
+                    </td>
+                    <td class="admin-table__actions">
+                      <button class="admin-btn admin-btn--primary admin-btn--small edit-list-post-btn" data-id="${post.id}">
+                        Edit
+                      </button>
+                      <a href="/blog-post.html?id=${post.id.replace(/^[^a-zA-Z0-9_-]+|[^a-zA-Z0-9_-]+$/g, '')}" target="_blank" class="admin-btn admin-btn--small">
+                        View
+                      </a>
+                      <button class="admin-btn admin-btn--danger admin-btn--small delete-post-btn" data-id="${post.id}">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+          
+          // Add event listeners to buttons
+          document.querySelectorAll('.edit-list-post-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const postId = btn.getAttribute('data-id');
+              editPost(postId);
+            });
+          });
+          
+          document.querySelectorAll('.delete-post-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const postId = btn.getAttribute('data-id');
+              if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+                deletePost(postId);
+              }
+            });
+          });
+        } catch (error) {
+          console.error('Error loading posts:', error);
+          postsList.innerHTML = `
+            <div class="admin-alert admin-alert--danger">
+              Error loading posts. Please try again later.
+            </div>
+          `;
+        }
+      }
+      
+      // Reset editor for new post
+      function resetEditor() {
+        document.getElementById('editor-title').textContent = 'New Post';
+        postIdInput.value = '';
+        postTitleInput.value = '';
+        postExcerptInput.value = '';
+        if (editor) {
+          editor.value('');
+        } else {
+          postContentInput.value = '';
+        }
+        postImageInput.value = '';
+        postPublishedInput.checked = true;
+        currentTags = [];
+        renderTags();
+        
+        // Clear image preview
+        imagePreview.style.display = 'none';
+        imagePreview.src = '';
+        
+        // Clear any message
+        editorMessage.innerHTML = '';
+      }
+      
+      // Load post for editing
+      async function editPost(postId) {
+        try {
+          // Get API token for authentication
+          const apiToken = await getApiToken();
+          
+          const response = await fetch(`${API_URL}/posts/${postId}?admin=true`, {
+            headers: {
+              'Authorization': `Bearer ${apiToken}`
+            }
+          });
+          if (!response.ok) throw new Error('Failed to fetch post');
+          
+          const post = await response.json();
+          
+          // Update form
+          document.getElementById('editor-title').textContent = 'Edit Post';
+          postIdInput.value = post.id;
+          postTitleInput.value = post.title;
+          postExcerptInput.value = post.excerpt;
+          
+          if (editor) {
+            editor.value(post.content);
+          } else {
+            postContentInput.value = post.content;
+          }
+          
+          postImageInput.value = post.image || '';
+          postPublishedInput.checked = post.published;
+          
+          // Update tags
+          currentTags = [...post.tags];
+          renderTags();
+          
+          // Show image preview if available
+          if (post.image) {
+            imagePreview.src = post.image;
+            imagePreview.style.display = 'block';
+          } else {
+            imagePreview.style.display = 'none';
+          }
+          
+          // Switch to editor view
+          showView('editor');
+        } catch (error) {
+          console.error('Error fetching post:', error);
+          alert('Error loading post for editing. Please try again.');
+        }
+      }
+      
+      // Delete post
+      // Get API token for authentication
+      async function getApiToken() {
+        // In a real application, you would store the token in memory and check expiration
+        // For simplicity, we'll request a new token each time
+        try {
+          const response = await fetch(`${API_URL}/token`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: 'admin', // These should be entered by the user in a real app
+              password: 'soft!ware3By4Matt5',
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to get API token');
+          }
+          
+          const data = await response.json();
+          return data.token;
+        } catch (error) {
+          console.error('Error getting API token:', error);
+          showMessage('Authentication error. Please reload the page.', 'danger');
+          return null;
+        }
+      }
+      
+      async function deletePost(postId) {
+        try {
+          // Get API token for authentication
+          const apiToken = await getApiToken();
+          
+          const response = await fetch(`${API_URL}/posts/${postId}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${apiToken}`,
+              'X-CSRF-Token': CSRF_TOKEN
+            },
+          });
+          
+          if (!response.ok) throw new Error('Failed to delete post');
+          
+          // Reload the current view
+          if (currentView === 'dashboard') {
+            loadDashboard();
+          } else {
+            loadPosts();
+          }
+          
+          // Show success message
+          alert('Post deleted successfully!');
+        } catch (error) {
+          console.error('Error deleting post:', error);
+          alert('Error deleting post. Please try again.');
+        }
+      }
+      
+      // Save post (create or update)
+      async function savePost(event) {
+        event.preventDefault();
+        
+        // Get form values
+        const postId = postIdInput.value;
+        const title = postTitleInput.value;
+        const excerpt = postExcerptInput.value;
+        const content = editor ? editor.value() : postContentInput.value;
+        const image = postImageInput.value;
+        const published = postPublishedInput.checked;
+        
+        // Validate form
+        if (!title || !excerpt || !content) {
+          showMessage('Please fill in all required fields.', 'danger');
+          return;
+        }
+        
+        // Prepare post data
+        const postData = {
+          title,
+          excerpt,
+          content,
+          tags: currentTags,
+          published,
+          csrf_token: CSRF_TOKEN, // Add CSRF token to request
+        };
+        
+        if (image) {
+          postData.image = image;
+        }
+        
+        try {
+          let response;
+          
+          // Get token for API authentication
+          const apiToken = await getApiToken();
+          
+          if (postId) {
+            // Update existing post
+            response = await fetch(`${API_URL}/posts/${postId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiToken}`,
+                'X-CSRF-Token': CSRF_TOKEN
+              },
+              body: JSON.stringify(postData),
+            });
+          } else {
+            // Create new post
+            response = await fetch(`${API_URL}/posts`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiToken}`,
+                'X-CSRF-Token': CSRF_TOKEN
+              },
+              body: JSON.stringify(postData),
+            });
+          }
+          
+          if (!response.ok) throw new Error('Failed to save post');
+          
+          // Show success message
+          showMessage(`Post ${postId ? 'updated' : 'created'} successfully!`, 'success');
+          
+          // Reload dashboard after short delay
+          setTimeout(() => {
+            showView('dashboard');
+          }, 1500);
+        } catch (error) {
+          console.error('Error saving post:', error);
+          showMessage('Error saving post. Please try again.', 'danger');
+        }
+      }
+      
+      // Show message in editor
+      function showMessage(message, type) {
+        editorMessage.innerHTML = `
+          <div class="admin-alert admin-alert--${type}">
+            ${message}
+          </div>
+        `;
+        
+        // Scroll to message
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      
+      // Render tags
+      function renderTags() {
+        tagsContainer.innerHTML = '';
+        
+        currentTags.forEach((tag, index) => {
+          const tagElement = document.createElement('div');
+          tagElement.className = 'admin-tag';
+          tagElement.innerHTML = `
+            ${tag}
+            <span class="admin-tag__remove" data-index="${index}">
+              <i class="fas fa-times"></i>
+            </span>
+          `;
+          tagsContainer.appendChild(tagElement);
+        });
+        
+        // Add event listeners to remove buttons
+        document.querySelectorAll('.admin-tag__remove').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const index = parseInt(btn.getAttribute('data-index'));
+            currentTags.splice(index, 1);
+            renderTags();
+          });
+        });
+      }
+      
+      // Initialize the application
+      document.addEventListener('DOMContentLoaded', () => {
+        // Initialize view
+        showView('dashboard');
+        
+        // Initialize navigation
+        document.querySelectorAll('.admin-nav__item[data-view]').forEach(item => {
+          item.addEventListener('click', (event) => {
+            event.preventDefault();
+            const view = item.getAttribute('data-view');
+            const action = item.getAttribute('data-action');
+            showView(view, action);
+          });
+        });
+        
+        // Initialize new post buttons
+        newPostBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            showView('editor', 'new');
+          });
+        });
+        
+        // Initialize cancel button
+        cancelEditBtn.addEventListener('click', () => {
+          if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
+            showView('dashboard');
+          }
+        });
+        
+        // Initialize post form
+        postForm.addEventListener('submit', savePost);
+        
+        // Initialize tags input
+        postTagsInput.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            
+            const tag = postTagsInput.value.trim();
+            if (tag && !currentTags.includes(tag)) {
+              currentTags.push(tag);
+              renderTags();
+              postTagsInput.value = '';
+            }
+          }
+        });
+        
+        // Initialize image preview
+        postImageInput.addEventListener('input', () => {
+          const imageUrl = postImageInput.value.trim();
+          
+          if (imageUrl) {
+            imagePreview.src = imageUrl;
+            imagePreview.style.display = 'block';
+            
+            // Handle image load error
+            imagePreview.onerror = () => {
+              imagePreview.style.display = 'none';
+            };
+          } else {
+            imagePreview.style.display = 'none';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

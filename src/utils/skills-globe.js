@@ -55,28 +55,7 @@ const skillsGlobe = () => {
   globeContainer.className = 'globe-container';
   globeContainer.style.position = 'relative';
   globeContainer.style.width = '100%';
-  
-  // Set initial height based on screen size - more responsive heights
-  const setGlobeContainerHeight = () => {
-    const screenWidth = window.innerWidth;
-    let containerHeight = '600px';
-    
-    if (screenWidth <= 480) {
-      containerHeight = '350px';
-    } else if (screenWidth <= 600) {
-      containerHeight = '400px';
-    } else if (screenWidth <= 768) {
-      containerHeight = '450px';
-    } else if (screenWidth <= 992) {
-      containerHeight = '500px';
-    }
-    
-    globeContainer.style.height = containerHeight;
-  };
-  
-  // Set initial height
-  setGlobeContainerHeight();
-  
+  globeContainer.style.height = '650px';
   globeContainer.style.zIndex = '100';
   globeContainer.style.isolation = 'isolate';
   globeContainer.style.borderRadius = 'var(--radius-lg)';
@@ -252,34 +231,17 @@ const skillsGlobe = () => {
     skillsList.appendChild(skillItem);
   });
   
-  // Add loading indicator with an ID for easier removal
+  // Add loading indicator
   const loadingIndicator = document.createElement('div');
   loadingIndicator.className = 'three-loading';
-  loadingIndicator.id = 'globe-loading-indicator';
-  loadingIndicator.style.position = 'absolute';
-  loadingIndicator.style.top = '50%';
-  loadingIndicator.style.left = '50%';
-  loadingIndicator.style.transform = 'translate(-50%, -50%)';
-  loadingIndicator.style.width = '40px';
-  loadingIndicator.style.height = '40px';
-  loadingIndicator.style.zIndex = '105';
-  loadingIndicator.innerHTML = '<div style="position: absolute; width: 40px; height: 40px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: #4361ee; animation: spin 1s linear infinite;"></div>';
-  globeContainer.appendChild(loadingIndicator);
+  canvas.appendChild(loadingIndicator);
   
   // Add a popup for focused skill
   const focusedSkillPopup = document.createElement('div');
   focusedSkillPopup.className = 'focused-skill-popup';
-  focusedSkillPopup.style.position = 'absolute';
-  focusedSkillPopup.style.padding = '5px 10px';
-  focusedSkillPopup.style.borderRadius = '4px';
-  focusedSkillPopup.style.fontSize = '14px';
-  focusedSkillPopup.style.fontWeight = 'bold';
-  focusedSkillPopup.style.color = 'white';
-  focusedSkillPopup.style.zIndex = '105';
-  focusedSkillPopup.style.display = 'none';
-  globeContainer.appendChild(focusedSkillPopup);
+  canvas.appendChild(focusedSkillPopup);
   
-  // Add instructions - hide on small screens
+  // Add instructions
   const instructions = document.createElement('div');
   instructions.className = 'globe-instructions';
   instructions.style.position = 'absolute';
@@ -293,15 +255,9 @@ const skillsGlobe = () => {
   instructions.style.pointerEvents = 'none';
   instructions.style.zIndex = '102';
   instructions.innerHTML = 'Move mouse to rotate • Click skills to focus';
-  
-  // Hide instructions on small screens
-  if (window.innerWidth <= 480) {
-    instructions.style.display = 'none';
-  }
-  
   globeContainer.appendChild(instructions);
   
-  // Add proficiency legend with responsiveness
+  // Add proficiency legend
   const proficiencyLegend = document.createElement('div');
   proficiencyLegend.className = 'proficiency-legend';
   proficiencyLegend.style.position = 'absolute';
@@ -316,11 +272,6 @@ const skillsGlobe = () => {
   proficiencyLegend.style.gap = '10px';
   proficiencyLegend.style.alignItems = 'center';
   proficiencyLegend.style.zIndex = '102';
-  
-  // Hide legend on small screens
-  if (window.innerWidth <= 480) {
-    proficiencyLegend.style.display = 'none';
-  }
   
   // Legend items
   const legendItems = [
@@ -351,33 +302,6 @@ const skillsGlobe = () => {
   
   globeContainer.appendChild(proficiencyLegend);
   
-  // Add a fallback message for mobile devices that cannot render WebGL properly
-  const fallbackMessage = document.createElement('div');
-  fallbackMessage.className = 'globe-fallback';
-  fallbackMessage.style.position = 'absolute';
-  fallbackMessage.style.top = '50%';
-  fallbackMessage.style.left = '50%';
-  fallbackMessage.style.transform = 'translate(-50%, -50%)';
-  fallbackMessage.style.textAlign = 'center';
-  fallbackMessage.style.color = 'white';
-  fallbackMessage.style.fontSize = '14px';
-  fallbackMessage.style.padding = '20px';
-  fallbackMessage.style.zIndex = '104';
-  fallbackMessage.style.display = 'none';
-  fallbackMessage.innerHTML = 'Interactive 3D skills globe<br>Explore my tech stack!';
-  globeContainer.appendChild(fallbackMessage);
-  
-  // Function to remove loading indicator
-  const removeLoadingIndicator = () => {
-    // Find and remove all loading indicators to ensure none remain
-    const loadingElements = document.querySelectorAll('.three-loading, #globe-loading-indicator');
-    loadingElements.forEach(el => {
-      if (el && el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
-    });
-  };
-  
   // Setup Three.js scene
   const scene = new THREE.Scene();
   
@@ -391,83 +315,11 @@ const skillsGlobe = () => {
   scene.add(directionalLight);
   
   const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+  camera.position.z = 6.5;
   
-  // Adjust camera distance based on screen size
-  const updateCameraPosition = () => {
-    const screenWidth = window.innerWidth;
-    if (screenWidth <= 480) {
-      camera.position.z = 8.5; // Further away for smaller screens
-    } else if (screenWidth <= 768) {
-      camera.position.z = 7.5;
-    } else {
-      camera.position.z = 6.5;
-    }
-  };
-  
-  updateCameraPosition();
-  
-  // Initialize renderer with better mobile compatibility settings
-  let renderer;
-  
-  try {
-    renderer = new THREE.WebGLRenderer({
-      canvas,
-      alpha: true,
-      antialias: false, // Disable antialiasing on mobile for better performance
-      powerPreference: 'high-performance',
-      failIfMajorPerformanceCaveat: false // Don't fail on low-end devices
-    });
-    
-    // Detect if WebGL is supported
-    if (!renderer.capabilities.isWebGL2 && !renderer.capabilities.isWebGL) {
-      throw new Error('WebGL not supported');
-    }
-    
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Limit pixel ratio for performance
-    renderer.setClearColor(0x000000, 0); // Make sure background is transparent
-    
-    // Try to force the loading indicator to be removed
-    setTimeout(removeLoadingIndicator, 1000);
-  } catch (error) {
-    // Show fallback message if WebGL initialization fails
-    console.warn('WebGL initialization failed:', error);
-    fallbackMessage.style.display = 'block';
-    removeLoadingIndicator();
-    
-    // Create a simple canvas fallback
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      // Draw a simple gradient background
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#070a13');
-      gradient.addColorStop(1, '#101426');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw a circle representing the globe
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 4, 0, Math.PI * 2);
-      ctx.strokeStyle = '#4361ee';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      
-      // Draw some dots representing skills
-      const skills = ['HTML', 'CSS', 'JS', 'React'];
-      skills.forEach((_, index) => {
-        const angle = (index / skills.length) * Math.PI * 2;
-        const x = canvas.width / 2 + Math.cos(angle) * (canvas.width / 5);
-        const y = canvas.height / 2 + Math.sin(angle) * (canvas.width / 5);
-        
-        ctx.beginPath();
-        ctx.arc(x, y, 8, 0, Math.PI * 2);
-        ctx.fillStyle = '#00aaff';
-        ctx.fill();
-      });
-    }
-    
-    return; // Exit early as we can't continue with Three.js
-  }
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
   
   // Set canvas to fill its container
   canvas.style.position = 'absolute';
@@ -476,7 +328,6 @@ const skillsGlobe = () => {
   canvas.style.width = '100%';
   canvas.style.height = '100%';
   canvas.style.zIndex = '101';
-  canvas.style.display = 'block'; // Ensure canvas is displayed
   
   // Create a sphere for the globe
   const globeGeometry = new THREE.SphereGeometry(2.5, 32, 32);
@@ -522,7 +373,7 @@ const skillsGlobe = () => {
   const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
   scene.add(glowMesh);
   
-  // Create a star field background with reduced particles for mobile
+  // Create a star field background
   const starsGeometry = new THREE.BufferGeometry();
   const starsMaterial = new THREE.PointsMaterial({
     color: 0xffffff,
@@ -530,18 +381,8 @@ const skillsGlobe = () => {
     transparent: true
   });
   
-  // Adjust number of stars based on screen size for performance
-  const getStarsCount = () => {
-    const screenWidth = window.innerWidth;
-    if (screenWidth <= 480) return 300;
-    if (screenWidth <= 768) return 500;
-    return 1000;
-  };
-  
   const starsVertices = [];
-  const starsCount = getStarsCount();
-  
-  for (let i = 0; i < starsCount; i++) {
+  for (let i = 0; i < 1000; i++) {
     const x = (Math.random() - 0.5) * 30;
     const y = (Math.random() - 0.5) * 30;
     const z = (Math.random() - 0.5) * 30;
@@ -592,10 +433,7 @@ const skillsGlobe = () => {
     const proficiency = getSkillProficiency(skill, index);
     // Create a sphere for the skill - size varies by proficiency
     const radius = 0.15 + proficiency * 0.15; // Vary between 0.15 and 0.3
-    
-    // Adjust geometry detail based on screen size for performance
-    const segmentDetail = window.innerWidth <= 480 ? 8 : 16;
-    const geometry = new THREE.SphereGeometry(radius, segmentDetail, segmentDetail);
+    const geometry = new THREE.SphereGeometry(radius, 16, 16);
     
     // Use custom materials for better appearance
     const material = new THREE.MeshPhongMaterial({ 
@@ -631,7 +469,7 @@ const skillsGlobe = () => {
     scene.add(particle);
     
     // Add a pulsing halo effect to each particle
-    const haloGeometry = new THREE.SphereGeometry(radius * 1.3, segmentDetail, segmentDetail);
+    const haloGeometry = new THREE.SphereGeometry(radius * 1.3, 16, 16);
     const haloMaterial = new THREE.MeshBasicMaterial({
       color: skill.color,
       transparent: true,
@@ -643,25 +481,12 @@ const skillsGlobe = () => {
     particle.userData.halo = halo;
   });
   
-  // Add trails to some particles - reduce or disable on mobile
-  const shouldAddTrail = (index) => {
-    if (window.innerWidth <= 480) {
-      // Add trails to very few particles on mobile or none
-      return index % 10 === 0;
-    } else if (window.innerWidth <= 768) {
-      return index % 5 === 0;
-    } else {
-      return index % 3 === 0;
-    }
-  };
-  
+  // Add trails to some particles
   particles.forEach((particle, index) => {
-    // Only add trails to certain skills based on screen size
-    if (shouldAddTrail(index)) {
+    // Only add trails to certain skills (e.g., primary skills)
+    if (index % 3 === 0) {
       const trailGeometry = new THREE.BufferGeometry();
-      
-      // Reduce trail length on mobile for performance
-      const maxTrailPoints = window.innerWidth <= 480 ? 5 : window.innerWidth <= 768 ? 10 : 20;
+      const maxTrailPoints = 20;
       const trailPositions = new Float32Array(maxTrailPoints * 3);
       
       // Initialize with particle's position
@@ -696,15 +521,8 @@ const skillsGlobe = () => {
   let focusedSkill = null;
   let activeCategory = 'all';
   
-  // Touch support for mobile
-  let isTouching = false;
-  let touchStartX, touchStartY;
-  
   // Handle mouse movement 
   canvas.addEventListener('mousemove', (event) => {
-    // Skip if user is currently touching (mobile)
-    if (isTouching) return;
-    
     // Calculate mouse position in normalized device coordinates
     const rect = canvas.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
@@ -747,136 +565,8 @@ const skillsGlobe = () => {
     }
   });
   
-  // Touch event handlers for mobile
-  canvas.addEventListener('touchstart', (event) => {
-    event.preventDefault();
-    isTouching = true;
-    
-    const touch = event.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-    
-    // Use touch for clicking/selecting skills
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = ((touch.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
-    mouse.y = -((touch.clientY - rect.top) / canvas.clientHeight) * 2 + 1;
-    
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(particles);
-    
-    if (intersects.length > 0) {
-      handleSkillSelection(intersects[0].object);
-    } else if (focusedSkill) {
-      // Clear focus when touching empty space
-      resetFocusedSkill();
-    }
-  });
-  
-  canvas.addEventListener('touchmove', (event) => {
-    event.preventDefault();
-    if (!isTouching) return;
-    
-    const touch = event.touches[0];
-    
-    // Calculate drag distance
-    const deltaX = touch.clientX - touchStartX;
-    const deltaY = touch.clientY - touchStartY;
-    
-    // Update rotation based on touch drag
-    targetRotationY += deltaX * 0.01;
-    targetRotationX += deltaY * 0.01;
-    
-    // Update starting position for next move event
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-    
-    // Stop auto-rotation when user interacts
-    isAutoRotating = false;
-  });
-  
-  canvas.addEventListener('touchend', () => {
-    isTouching = false;
-    
-    // Resume auto-rotation after inactivity
-    clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(() => {
-      isAutoRotating = true;
-    }, 3000);
-  });
-  
-  // Helper function to handle skill selection
-  const handleSkillSelection = (clickedParticle) => {
-    // If we already had a focused skill, unfocus it
-    if (focusedSkill) {
-      // Reset previous focus
-      focusedSkill.material.color.set(focusedSkill.userData.originalColor);
-      focusedSkill.scale.set(1, 1, 1);
-      
-      // Reset the previous list item
-      const prevIndex = particles.indexOf(focusedSkill);
-      if (prevIndex >= 0 && skillItems[prevIndex]) {
-        skillItems[prevIndex].style.backgroundColor = 'rgba(0,0,0,0.3)';
-        skillItems[prevIndex].style.fontWeight = 'normal';
-        skillItems[prevIndex].dataset.selected = 'false';
-      }
-      
-      // If clicking the same particle, just unfocus
-      if (clickedParticle === focusedSkill) {
-        focusedSkill = null;
-        focusedSkillPopup.style.display = 'none';
-        return;
-      }
-    }
-    
-    // Focus the clicked skill
-    focusedSkill = clickedParticle;
-    focusedSkill.material.color.set(0xff0000);
-    focusedSkill.scale.set(2, 2, 2);
-    
-    // Update the popup
-    focusedSkillPopup.textContent = focusedSkill.userData.skill;
-    focusedSkillPopup.style.display = 'block';
-    focusedSkillPopup.style.backgroundColor = `rgba(${(focusedSkill.userData.originalColor >> 16) & 255}, ${(focusedSkill.userData.originalColor >> 8) & 255}, ${focusedSkill.userData.originalColor & 255}, 0.8)`;
-    
-    // Position the popup above the particle
-    updatePopupPosition();
-    
-    // Highlight the list item
-    const particleIndex = particles.indexOf(focusedSkill);
-    if (skillItems[particleIndex]) {
-      skillItems[particleIndex].style.backgroundColor = 'rgba(255,0,0,0.3)';
-      skillItems[particleIndex].style.fontWeight = 'bold';
-      skillItems[particleIndex].dataset.selected = 'true';
-      
-      // Scroll to the item if needed
-      skillItems[particleIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
-  
-  // Helper function to reset focused skill
-  const resetFocusedSkill = () => {
-    if (focusedSkill) {
-      focusedSkill.material.color.set(focusedSkill.userData.originalColor);
-      focusedSkill.scale.set(1, 1, 1);
-      
-      // Reset the list item
-      const prevIndex = particles.indexOf(focusedSkill);
-      if (prevIndex >= 0 && skillItems[prevIndex]) {
-        skillItems[prevIndex].style.backgroundColor = 'rgba(0,0,0,0.3)';
-        skillItems[prevIndex].style.fontWeight = 'normal';
-        skillItems[prevIndex].dataset.selected = 'false';
-      }
-      
-      focusedSkill = null;
-      focusedSkillPopup.style.display = 'none';
-    }
-  };
-  
   // Handle click event for focusing on a skill
   canvas.addEventListener('click', (event) => {
-    // Skip if this was the end of a touch event
-    if (isTouching) return;
-    
     // Calculate mouse position in normalized device coordinates
     const rect = canvas.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
@@ -889,10 +579,78 @@ const skillsGlobe = () => {
     const intersects = raycaster.intersectObjects(particles);
     
     if (intersects.length > 0) {
-      handleSkillSelection(intersects[0].object);
+      const clickedParticle = intersects[0].object;
+      const particleIndex = particles.indexOf(clickedParticle);
+      
+      // If we already had a focused skill, unfocus it
+      if (focusedSkill) {
+        // Reset previous focus
+        focusedSkill.material.color.set(focusedSkill.userData.originalColor);
+        focusedSkill.scale.set(1, 1, 1);
+        
+        // Reset the previous list item
+        const prevIndex = particles.indexOf(focusedSkill);
+        if (prevIndex >= 0 && skillItems[prevIndex]) {
+          skillItems[prevIndex].style.backgroundColor = 'rgba(0,0,0,0.3)';
+          skillItems[prevIndex].style.fontWeight = 'normal';
+          skillItems[prevIndex].dataset.selected = 'false';
+        }
+        
+        // If clicking the same particle, just unfocus
+        if (clickedParticle === focusedSkill) {
+          focusedSkill = null;
+          focusedSkillPopup.style.display = 'none';
+          return;
+        }
+      }
+      
+      // Focus the clicked skill
+      focusedSkill = clickedParticle;
+      focusedSkill.material.color.set(0xff0000);
+      focusedSkill.scale.set(2, 2, 2);
+      
+      // Update the popup
+      focusedSkillPopup.textContent = focusedSkill.userData.skill;
+      focusedSkillPopup.style.display = 'block';
+      focusedSkillPopup.style.backgroundColor = `rgba(${(focusedSkill.userData.originalColor >> 16) & 255}, ${(focusedSkill.userData.originalColor >> 8) & 255}, ${focusedSkill.userData.originalColor & 255}, 0.8)`;
+      
+      // Position the popup above the particle
+      const vector = new THREE.Vector3();
+      vector.copy(focusedSkill.position);
+      vector.project(camera);
+      
+      const x = (vector.x * 0.5 + 0.5) * canvas.clientWidth;
+      const y = (-vector.y * 0.5 + 0.5) * canvas.clientHeight;
+      
+      focusedSkillPopup.style.left = `${x}px`;
+      focusedSkillPopup.style.top = `${y - 20}px`;
+      
+      // Highlight the list item
+      if (skillItems[particleIndex]) {
+        skillItems[particleIndex].style.backgroundColor = 'rgba(255,0,0,0.3)';
+        skillItems[particleIndex].style.fontWeight = 'bold';
+        skillItems[particleIndex].dataset.selected = 'true';
+        
+        // Scroll to the item if needed
+        skillItems[particleIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     } else {
       // Clicked outside any skill, clear focus
-      resetFocusedSkill();
+      if (focusedSkill) {
+        focusedSkill.material.color.set(focusedSkill.userData.originalColor);
+        focusedSkill.scale.set(1, 1, 1);
+        
+        // Reset the list item
+        const prevIndex = particles.indexOf(focusedSkill);
+        if (prevIndex >= 0 && skillItems[prevIndex]) {
+          skillItems[prevIndex].style.backgroundColor = 'rgba(0,0,0,0.3)';
+          skillItems[prevIndex].style.fontWeight = 'normal';
+          skillItems[prevIndex].dataset.selected = 'false';
+        }
+        
+        focusedSkill = null;
+        focusedSkillPopup.style.display = 'none';
+      }
     }
   });
   
@@ -974,8 +732,6 @@ const skillsGlobe = () => {
   let autoRotateSpeed = 0.005;
   
   canvas.addEventListener('mousemove', (event) => {
-    if (isTouching) return;
-    
     // Stop auto-rotation when user interacts
     isAutoRotating = false;
     
@@ -994,15 +750,12 @@ const skillsGlobe = () => {
   
   // Resume auto-rotation after inactivity
   let inactivityTimer;
-  const resetInactivityTimer = () => {
+  canvas.addEventListener('mousemove', () => {
     clearTimeout(inactivityTimer);
     inactivityTimer = setTimeout(() => {
       isAutoRotating = true;
     }, 3000); // Resume auto-rotation after 3 seconds of inactivity
-  };
-  
-  canvas.addEventListener('mousemove', resetInactivityTimer);
-  canvas.addEventListener('touchend', resetInactivityTimer);
+  });
   
   // Link skill items in the info panel to the particles
   skillItems.forEach((item, index) => {
@@ -1051,267 +804,127 @@ const skillsGlobe = () => {
   let delta = 0;
   let lastFrameTime = 0;
   
-  // Performance monitoring
-  let frameCount = 0;
-  let lastFpsTime = 0;
-  let fps = 0;
-  let lowPerformanceMode = false;
-  let isRendering = true;
-  
-  // Helper to check if we should reduce rendering quality for performance
-  const checkPerformance = (currentTime) => {
-    frameCount++;
-    
-    if (currentTime > lastFpsTime + 1000) {
-      fps = frameCount;
-      frameCount = 0;
-      lastFpsTime = currentTime;
-      
-      // If FPS drops below threshold, enable low performance mode
-      if (fps < 20 && !lowPerformanceMode) {
-        lowPerformanceMode = true;
-        
-        // Reduce visual effects for better performance
-        particles.forEach(particle => {
-          if (particle.userData.trail) {
-            particle.userData.trail.visible = false;
-          }
-          
-          // Simplify halos
-          if (particle.userData.halo) {
-            particle.userData.halo.material.opacity = 0.1;
-          }
-        });
-        
-        // Reduce star count
-        stars.visible = window.innerWidth > 768;
-        
-        // Simplify orbit rings
-        Object.values(orbits).forEach(orbit => {
-          orbit.visible = window.innerWidth > 768;
-        });
-      }
-    }
-  };
-  
-  // Show error message if rendering fails
-  const handleRenderingError = () => {
-    isRendering = false;
-    // Show fallback message
-    fallbackMessage.style.display = 'block';
-    // Hide loading indicator
-    removeLoadingIndicator();
-    
-    // Log the error
-    console.warn('Three.js rendering failed, showing fallback content');
-    
-    // Try to render at least a static scene
-    try {
-      renderer.render(scene, camera);
-    } catch (e) {
-      console.error('Static render also failed:', e);
-    }
-  };
-  
-  // Ensure loading indicator is removed
-  let loadingCheckCount = 0;
-  const checkAndRemoveLoadingIndicator = () => {
-    removeLoadingIndicator();
-    loadingCheckCount++;
-    
-    // Keep trying to remove the loading indicator for a few seconds
-    if (loadingCheckCount < 10) {
-      setTimeout(checkAndRemoveLoadingIndicator, 500);
-    }
-  };
-  
-  // Start the loading indicator check
-  checkAndRemoveLoadingIndicator();
-  
   // Animation loop
   const animate = (currentTime) => {
-    if (!isRendering) return;
+    requestAnimationFrame(animate);
     
-    try {
-      requestAnimationFrame(animate);
-      
-      // Check performance and adjust quality if needed
-      checkPerformance(currentTime);
-      
-      // Calculate time delta for consistent animations
-      delta = (currentTime - lastFrameTime) / 1000;
-      lastFrameTime = currentTime;
-      time += delta;
-      
-      // Remove loading indicator after first frame
-      if (time > 0.5) {
-        removeLoadingIndicator();
-      }
-      
-      // Handle auto-rotation
-      if (isAutoRotating) {
-        currentRotationY += autoRotateSpeed;
-      } else {
-        // Smooth rotation
-        currentRotationY += (targetRotationY - currentRotationY) * 0.05;
-        currentRotationX += (targetRotationX - currentRotationX) * 0.05;
-      }
-      
-      // Apply rotation to globe
-      globe.rotation.y = currentRotationY;
-      globe.rotation.x = currentRotationX;
-      
-      // Apply the same rotation to the glow effect
-      glowMesh.rotation.y = globe.rotation.y;
-      glowMesh.rotation.x = globe.rotation.x;
-      
-      // Rotate orbit rings - skip in low performance mode
-      if (!lowPerformanceMode) {
-        Object.values(orbits).forEach((orbit, index) => {
-          orbit.rotation.z += 0.001 * (index + 1);
-        });
-      }
-      
-      // Animate star field - skip in low performance mode
-      if (!lowPerformanceMode) {
-        stars.rotation.y = time * 0.05;
-        stars.rotation.z = time * 0.02;
-      }
-      
-      // Update particles positioning on globe
-      particles.forEach((particle) => {
-        // Skip the focused particle
-        if (particle !== focusedSkill) {
-          // Get the original angles
-          const phi = particle.userData.phi;
-          const theta = particle.userData.theta;
-          
-          // Rotate around axes
-          const rotatedTheta = theta + globe.rotation.y;
-          
-          // Calculate new position based on sphere coordinates
-          const x = 2.5 * Math.cos(rotatedTheta) * Math.sin(phi);
-          const z = 2.5 * Math.cos(phi);
-          const y = 2.5 * Math.sin(rotatedTheta) * Math.sin(phi);
-          
-          // Apply X rotation (tilt)
-          const cosX = Math.cos(globe.rotation.x);
-          const sinX = Math.sin(globe.rotation.x);
-          const newY = y * cosX - z * sinX;
-          const newZ = y * sinX + z * cosX;
-          
-          particle.position.set(x, newY, newZ);
-          
-          // Pulse the halo - skip in low performance mode
-          if (!lowPerformanceMode && particle.userData.halo) {
-            const pulseFactor = 1 + 0.1 * Math.sin(time * 3 + phi * 5);
-            particle.userData.halo.scale.set(pulseFactor, pulseFactor, pulseFactor);
-          }
-          
-          // Update trail if present - skip in low performance mode
-          if (!lowPerformanceMode && particle.userData.trail) {
-            const positions = particle.userData.trailPositions;
-            // Only update every few frames to create a spaced trail
-            if (particle.userData.trailUpdateCounter++ % 5 === 0) {
-              // Shift all positions back
-              for (let i = positions.length / 3 - 1; i > 0; i--) {
-                positions[i * 3] = positions[(i - 1) * 3];
-                positions[i * 3 + 1] = positions[(i - 1) * 3 + 1];
-                positions[i * 3 + 2] = positions[(i - 1) * 3 + 2];
-              }
-              
-              // Set the first position to current particle position
-              positions[0] = particle.position.x;
-              positions[1] = particle.position.y;
-              positions[2] = particle.position.z;
-              
-              // Update the buffer
-              particle.userData.trail.geometry.attributes.position.needsUpdate = true;
+    // Calculate time delta for consistent animations
+    delta = (currentTime - lastFrameTime) / 1000;
+    lastFrameTime = currentTime;
+    time += delta;
+    
+    // Handle auto-rotation
+    if (isAutoRotating) {
+      currentRotationY += autoRotateSpeed;
+    } else {
+      // Smooth rotation
+      currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+      currentRotationX += (targetRotationX - currentRotationX) * 0.05;
+    }
+    
+    // Apply rotation to globe
+    globe.rotation.y = currentRotationY;
+    globe.rotation.x = currentRotationX;
+    
+    // Apply the same rotation to the glow effect
+    glowMesh.rotation.y = globe.rotation.y;
+    glowMesh.rotation.x = globe.rotation.x;
+    
+    // Rotate orbit rings
+    Object.values(orbits).forEach((orbit, index) => {
+      orbit.rotation.z += 0.001 * (index + 1);
+    });
+    
+    // Animate star field
+    stars.rotation.y = time * 0.05;
+    stars.rotation.z = time * 0.02;
+    
+    // Update particles positioning on globe
+    particles.forEach((particle) => {
+      // Skip the focused particle
+      if (particle !== focusedSkill) {
+        // Get the original angles
+        const phi = particle.userData.phi;
+        const theta = particle.userData.theta;
+        
+        // Rotate around axes
+        const rotatedTheta = theta + globe.rotation.y;
+        
+        // Calculate new position based on sphere coordinates
+        const x = 2.5 * Math.cos(rotatedTheta) * Math.sin(phi);
+        const z = 2.5 * Math.cos(phi);
+        const y = 2.5 * Math.sin(rotatedTheta) * Math.sin(phi);
+        
+        // Apply X rotation (tilt)
+        const cosX = Math.cos(globe.rotation.x);
+        const sinX = Math.sin(globe.rotation.x);
+        const newY = y * cosX - z * sinX;
+        const newZ = y * sinX + z * cosX;
+        
+        particle.position.set(x, newY, newZ);
+        
+        // Pulse the halo
+        if (particle.userData.halo) {
+          const pulseFactor = 1 + 0.1 * Math.sin(time * 3 + phi * 5);
+          particle.userData.halo.scale.set(pulseFactor, pulseFactor, pulseFactor);
+        }
+        
+        // Update trail if present
+        if (particle.userData.trail) {
+          const positions = particle.userData.trailPositions;
+          // Only update every few frames to create a spaced trail
+          if (particle.userData.trailUpdateCounter++ % 5 === 0) {
+            // Shift all positions back
+            for (let i = positions.length / 3 - 1; i > 0; i--) {
+              positions[i * 3] = positions[(i - 1) * 3];
+              positions[i * 3 + 1] = positions[(i - 1) * 3 + 1];
+              positions[i * 3 + 2] = positions[(i - 1) * 3 + 2];
             }
+            
+            // Set the first position to current particle position
+            positions[0] = particle.position.x;
+            positions[1] = particle.position.y;
+            positions[2] = particle.position.z;
+            
+            // Update the buffer
+            particle.userData.trail.geometry.attributes.position.needsUpdate = true;
           }
         }
-      });
-      
-      // Update popup position
-      updatePopupPosition();
-      
-      // Update glowMesh view vector (for glow effect)
-      glowMaterial.uniforms.viewVector.value = new THREE.Vector3().subVectors(
-        camera.position,
-        glowMesh.position
-      );
-      
-      renderer.render(scene, camera);
-      
-      // Remove loading indicator again
-      if (time > 1) {
-        removeLoadingIndicator();
       }
-    } catch (error) {
-      console.error('Animation error:', error);
-      handleRenderingError();
+    });
+    
+    // Update popup position
+    updatePopupPosition();
+    
+    // Update glowMesh view vector (for glow effect)
+    glowMaterial.uniforms.viewVector.value = new THREE.Vector3().subVectors(
+      camera.position,
+      glowMesh.position
+    );
+    
+    renderer.render(scene, camera);
+    
+    // Remove loading indicator once rendered
+    if (loadingIndicator.parentNode) {
+      loadingIndicator.parentNode.removeChild(loadingIndicator);
     }
   };
   
   // Handle window resize
   window.addEventListener('resize', () => {
-    try {
-      // Update container height
-      setGlobeContainerHeight();
-      
-      // Update camera position
-      updateCameraPosition();
-      
-      // Update canvas size
-      const newWidth = canvas.clientWidth;
-      const newHeight = canvas.clientHeight;
-      
-      camera.aspect = newWidth / newHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(newWidth, newHeight);
-      
-      // Hide/show UI elements based on screen size
-      if (window.innerWidth <= 480) {
-        instructions.style.display = 'none';
-        proficiencyLegend.style.display = 'none';
-      } else {
-        instructions.style.display = 'block';
-        proficiencyLegend.style.display = 'flex';
-      }
-      
-      // Make sure loading indicator is still removed
-      removeLoadingIndicator();
-    } catch (error) {
-      console.error('Resize error:', error);
-      handleRenderingError();
-    }
+    const newWidth = canvas.clientWidth;
+    const newHeight = canvas.clientHeight;
+    
+    camera.aspect = newWidth / newHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(newWidth, newHeight);
   });
   
   // Initial resize to make sure everything is sized correctly
   setTimeout(() => {
-    try {
-      const resizeEvent = new Event('resize');
-      window.dispatchEvent(resizeEvent);
-      
-      // Extra attempt to remove loading indicator
-      removeLoadingIndicator();
-    } catch (error) {
-      console.error('Initial resize error:', error);
-      handleRenderingError();
-    }
+    const resizeEvent = new Event('resize');
+    window.dispatchEvent(resizeEvent);
   }, 100);
-  
-  // Check if WebGL context is lost
-  canvas.addEventListener('webglcontextlost', (event) => {
-    event.preventDefault();
-    console.warn('WebGL context lost');
-    handleRenderingError();
-  });
-  
-  // Remove all loading indicators when DOM is fully loaded
-  window.addEventListener('load', () => {
-    removeLoadingIndicator();
-  });
   
   // Start animation
   animate(0);

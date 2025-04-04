@@ -1,5 +1,60 @@
 /* Blog post specific styles */
 
+/* Specific styling for FHIR-related content */
+.blog-post__content ul + ul li {
+  margin-bottom: 0.75rem;
+}
+
+/* Force background removal on any element with inline style */
+.blog-post__content [style*="background"],
+.blog-post__content [style*="background-color"] {
+  background-color: transparent !important;
+}
+
+/* Improve list spacing in nested lists */
+.blog-post__content ul ul,
+.blog-post__content ol ol,
+.blog-post__content ul ol,
+.blog-post__content ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* Special styling for FHIR resource lists */
+.blog-post__content .resource-list {
+  margin-left: 1rem;
+  list-style-type: none;
+}
+
+.blog-post__content .resource-list li {
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.blog-post__content .resource-list li::before {
+  content: '•';
+  position: absolute;
+  left: -1rem;
+  color: var(--clr-primary);
+  font-weight: bold;
+}
+
+.blog-post__content .resource-list li strong,
+.blog-post__content .resource-list li em {
+  font-style: normal;
+  background-color: transparent !important;
+  font-weight: 600;
+  color: var(--clr-primary);
+  display: inline-block;
+  min-width: 100px;
+}
+
+body:not(.light-mode) .blog-post__content .resource-list li strong,
+body:not(.light-mode) .blog-post__content .resource-list li em {
+  color: var(--clr-blue-light);
+}
+
 /* Background styling */
 body {
   position: relative;
@@ -110,7 +165,7 @@ body:not(.light-mode) .blog-tag {
   border-radius: 8px;
   margin-bottom: 2rem;
   max-height: 500px;
-  object-fit: cover;
+  object-fit: contain; /* Changed from cover to contain to preserve aspect ratio */
   display: block;
 }
 
@@ -157,12 +212,22 @@ body:not(.light-mode) .blog-post__content figcaption {
   font-size: 1.75rem;
   margin-top: 2.5rem;
   margin-bottom: 1rem;
+  padding: 0.3rem 0;
+  transition: background-color 0.3s ease;
 }
 
 .blog-post__content h3 {
   font-size: 1.5rem;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
+  padding: 0.3rem 0;
+  transition: background-color 0.3s ease;
+}
+
+/* Highlight effect for headings when navigating through table of contents */
+.blog-post__content .highlight-heading {
+  background-color: rgba(0, 122, 255, 0.2);
+  border-radius: 4px;
 }
 
 .blog-post__content p {
@@ -192,12 +257,42 @@ body:not(.light-mode) .blog-post__content a {
 
 .blog-post__content li {
   margin-bottom: 0.5rem;
+  position: relative;
+}
+
+/* Remove background styling from list items and their children */
+.blog-post__content li,
+.blog-post__content li *,
+.blog-post__content li span,
+.blog-post__content li div {
+  background-color: transparent !important;
+}
+
+/* Special handling for FHIR style lists */
+.blog-post__content li[style*="background"] {
+  background-color: transparent !important;
+}
+
+/* Add better styling for resource names in lists */
+.blog-post__content li strong,
+.blog-post__content li code {
+  color: var(--clr-primary);
+  font-weight: 600;
+  background-color: transparent !important;
+}
+
+body:not(.light-mode) .blog-post__content li strong,
+body:not(.light-mode) .blog-post__content li code {
+  color: var(--clr-blue-light) !important;
+  text-shadow: 0 0 4px rgba(58, 120, 202, 0.4);
 }
 
 .blog-post__content img {
   max-width: 100%;
   border-radius: 4px;
-  margin: 1.5rem 0;
+  margin: 1.5rem auto;
+  display: block;
+  object-fit: contain; /* Ensure images maintain aspect ratio */
 }
 
 .blog-post__content blockquote {
@@ -231,19 +326,21 @@ body:not(.light-mode) .blog-post__content blockquote {
 }
 
 .blog-post__content code:not(pre > code) {
-  background-color: rgba(0, 0, 0, 0.05);
   padding: 0.2em 0.4em;
   border-radius: 3px;
+  font-weight: 500;
 }
 
 body.light-mode .blog-post__content code:not(pre > code) {
-  color: var(--clr-dark);
-  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--clr-primary-dark);
+  background-color: rgba(12, 78, 162, 0.1);
+  border: 1px solid rgba(12, 78, 162, 0.2);
 }
 
 body:not(.light-mode) .blog-post__content code:not(pre > code) {
-  color: var(--clr-light);
+  color: var(--clr-white);
   background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .blog-post__content table {
@@ -354,10 +451,25 @@ body:not(.light-mode) .blog-post__nav-title {
   color: var(--clr-primary);
   text-decoration: none;
   font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+
+body:not(.light-mode) .blog-post__back-link {
+  color: var(--clr-blue-light);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .blog-post__back-link:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+body:not(.light-mode) .blog-post__back-link:hover {
+  color: var(--clr-white);
+  background-color: rgba(255, 255, 255, 0.15);
+  font-weight: 600;
 }
 
 .blog-post__back-link i {
@@ -384,49 +496,28 @@ body:not(.light-mode) .blog-post__nav-title {
   transition: all 0.2s ease;
 }
 
+body:not(.light-mode) .blog-post__author-social {
+  color: var(--clr-blue-light);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .blog-post__author-social:hover {
   color: var(--clr-secondary);
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+body:not(.light-mode) .blog-post__author-social:hover {
+  color: var(--clr-white);
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
 }
 
 .blog-post__author-social i {
   margin-right: 0.5rem;
 }
 
-/* Share buttons */
-.blog-post__share {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.blog-post__share-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  color: white;
-  transition: opacity 0.2s ease;
-}
-
-.blog-post__share-btn:hover {
-  opacity: 0.8;
-}
-
-.blog-post__share-btn--twitter {
-  background-color: #1DA1F2;
-}
-
-.blog-post__share-btn--facebook {
-  background-color: #4267B2;
-}
-
-.blog-post__share-btn--linkedin {
-  background-color: #0077B5;
-}
+/* Share buttons moved to dedicated CSS file */
+/* styles/components/blog/share-buttons.css */
 
 /* Error state */
 .error {
@@ -544,6 +635,9 @@ body:not(.light-mode) .blog-post__toc-list a {
 
 body:not(.light-mode) .blog-post__toc-list a:hover {
   background-color: var(--clr-blue-light);
+  color: var(--clr-black);
+  font-weight: 600;
+  text-shadow: none;
 }
 
 .blog-post__toc-list ul {

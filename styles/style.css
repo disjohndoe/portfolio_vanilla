@@ -319,6 +319,12 @@ body:not(.light-mode) .logo {
   transition: all var(--transition-fast);
 }
 
+body:not(.light-mode) .social-link {
+  background-color: rgba(58, 120, 202, 0.3);
+  color: var(--clr-blue-light);
+  box-shadow: 0 0 8px rgba(58, 120, 202, 0.5);
+}
+
 .light-mode .social-link {
   background-color: rgba(12, 78, 162, 0.15);
   color: var(--clr-primary);

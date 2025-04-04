@@ -7,6 +7,7 @@ import '../styles/components/mobile-nav.css';
 import '../styles/components/loader.css';
 import '../styles/components/navigation.css';
 import '../styles/components/blog-post.css';
+import '../styles/components/blog/share-buttons.css'; // Added special share button styling
 import '../styles/utils.css';
 
 // Import utilities 
@@ -43,6 +44,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Initialize blog post functionality
 document.addEventListener('DOMContentLoaded', () => {
+  // Function to run after the blog post content is rendered to fix FHIR resource lists
+  function fixResourceLists() {
+    // Find all list items and remove backgrounds
+    document.querySelectorAll('.blog-post__content li').forEach(li => {
+      // Remove any background styling
+      li.style.backgroundColor = 'transparent';
+      
+      // Also clean up any child elements
+      li.querySelectorAll('*').forEach(child => {
+        if (child.style) {
+          child.style.backgroundColor = 'transparent';
+        }
+      });
+      
+      // Format resource items (format: ResourceName: description)
+      const text = li.innerHTML;
+      if (text.includes(':') && !text.includes('<strong>')) {
+        const parts = text.split(':', 2);
+        if (parts[0].trim().length > 0 && parts[0].indexOf('<') === -1) {
+          li.innerHTML = `<strong>${parts[0].trim()}</strong>:${parts[1]}`;
+        }
+      }
+    });
+    
+    // Find potential FHIR resource sections
+    document.querySelectorAll('.blog-post__content h2, .blog-post__content h3, .blog-post__content p').forEach(el => {
+      if (el.textContent.includes('Resources:') || el.textContent.includes('Resource Types:')) {
+        // Find the next UL and apply the resource-list class
+        let nextEl = el.nextElementSibling;
+        while (nextEl) {
+          if (nextEl.tagName === 'UL') {
+            nextEl.classList.add('resource-list');
+            break;
+          }
+          nextEl = nextEl.nextElementSibling;
+        }
+      }
+    });
+  }
   // Constants
   const BLOG_API = '/api/blog.php';
   
@@ -102,6 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
     markdown = markdown.replace(/^\s*\n\d\. (.*)/gm, '<ol>\n<li>$1</li>');
     markdown = markdown.replace(/^\d\. (.*)/gm, '<li>$1</li>');
     markdown = markdown.replace(/^\s*\n<\/ol>/gm, '</ol>');
+    
+    // Process nested lists with indentation (handle specifically for FHIR resources)
+    markdown = markdown.replace(/<li>([^:]+): /g, '<li><strong>$1</strong>: ');
+    
+    // Process o-based lists (commonly used for FHIR resource lists)
+    markdown = markdown.replace(/^\s*o\s+(.*)/gm, '<li>$1</li>');
+    
+    // Special handling for resource items with a colon but no formatting yet
+    markdown = markdown.replace(/<li>([^<:]+):\s*([^<]+)<\/li>/g, '<li><strong>$1</strong>: $2</li>');
     
     // Process links and images
     markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
@@ -167,44 +216,51 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // Fetch and display blog post
-  async function fetchPost() {
-    if (!postId) {
-      showError('Post not found', 'The blog post you requested could not be found.');
-      return;
-    }
-    
-    try {
+  function fetchPost() {
+    return new Promise((resolve) => {
+      if (!postId) {
+        showError('Post not found', 'The blog post you requested could not be found.');
+        resolve();
+        return;
+      }
+      
       // Fetch single post from API
       console.log(`Fetching post from API: ${BLOG_API}?id=${postId}`);
-      const response = await fetch(`${BLOG_API}?id=${postId}`);
-      
-      if (!response.ok) {
-        console.error('API error:', response.status, response.statusText);
-        throw new Error('Post not found');
-      }
-      
-      const post = await response.json();
-      displayPost(post);
-      fetchRelatedPosts(post);
-    } catch (error) {
-      console.error('Error fetching post:', error);
-      
-      // Try using fallback data
-      if (typeof getBlogFallbackData === 'function') {
-        console.log('Trying fallback data for post:', postId);
-        const fallbackData = getBlogFallbackData();
-        const fallbackPost = fallbackData.find(post => post.id === postId);
-        
-        if (fallbackPost) {
-          console.log('Found post in fallback data');
-          displayPost(fallbackPost);
-          fetchRelatedPostsFromAllPosts(fallbackPost, fallbackData);
-          return;
-        }
-      }
-      
-      showError('Post not found', 'The blog post you requested could not be found.');
-    }
+      fetch(`${BLOG_API}?id=${postId}`)
+        .then(response => {
+          if (!response.ok) {
+            console.error('API error:', response.status, response.statusText);
+            throw new Error('Post not found');
+          }
+          return response.json();
+        })
+        .then(post => {
+          displayPost(post);
+          fetchRelatedPosts(post);
+          resolve();
+        })
+        .catch(error => {
+          console.error('Error fetching post:', error);
+          
+          // Try using fallback data
+          if (typeof getBlogFallbackData === 'function') {
+            console.log('Trying fallback data for post:', postId);
+            const fallbackData = getBlogFallbackData();
+            const fallbackPost = fallbackData.find(post => post.id === postId);
+            
+            if (fallbackPost) {
+              console.log('Found post in fallback data');
+              displayPost(fallbackPost);
+              fetchRelatedPostsFromAllPosts(fallbackPost, fallbackData);
+              resolve();
+              return;
+            }
+          }
+          
+          showError('Post not found', 'The blog post you requested could not be found.');
+          resolve();
+        });
+    });
   }
   
   // Display blog post
@@ -261,15 +317,18 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
       
       <div class="blog-post__share">
-        <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}" target="_blank" class="blog-post__share-btn blog-post__share-btn--twitter">
-          <i class="fab fa-twitter"></i>
-        </a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" target="_blank" class="blog-post__share-btn blog-post__share-btn--facebook">
-          <i class="fab fa-facebook-f"></i>
-        </a>
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" target="_blank" class="blog-post__share-btn blog-post__share-btn--linkedin">
-          <i class="fab fa-linkedin-in"></i>
-        </a>
+        <div class="blog-post__share-label">Share this post:</div>
+        <div class="blog-post__share-buttons">
+          <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}" target="_blank" class="blog-post__share-btn blog-post__share-btn--twitter" title="Share on Twitter">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" target="_blank" class="blog-post__share-btn blog-post__share-btn--facebook" title="Share on Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" target="_blank" class="blog-post__share-btn blog-post__share-btn--linkedin" title="Share on LinkedIn">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
       </div>
       
       <div class="blog-post__back">
@@ -289,6 +348,9 @@ document.addEventListener('DOMContentLoaded', () => {
         hljs.highlightBlock(block);
       });
     }
+    
+    // Fix resource lists in FHIR blog posts
+    fixResourceLists();
   }
   
   // Fetch related posts for navigation
@@ -443,6 +505,53 @@ document.addEventListener('DOMContentLoaded', () => {
   // Call removeLoader after a reasonable time if not already done
   setTimeout(removeLoader, 2000);
   
+  // Handle smooth scrolling for table of contents links
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    
+    // Check if the clicked element is a link inside the table of contents
+    if (target.tagName === 'A' && target.closest('.blog-post__toc-list')) {
+      e.preventDefault();
+      
+      // Get the target element ID from the href
+      const targetId = target.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        // Scroll to the element with smooth behavior
+        targetElement.scrollIntoView({ behavior: 'smooth' });
+        
+        // Add a highlight effect to the target heading
+        targetElement.classList.add('highlight-heading');
+        setTimeout(() => {
+          targetElement.classList.remove('highlight-heading');
+        }, 2000);
+        
+        // Update URL without page reload
+        history.pushState(null, null, `#${targetId}`);
+      }
+    }
+  });
+  
   // Fetch blog post
-  fetchPost();
+  fetchPost().then(() => {
+    // Check if URL has a hash and scroll to the corresponding element
+    if (window.location.hash) {
+      const targetId = window.location.hash.substring(1);
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        // Small delay to ensure content is rendered
+        setTimeout(() => {
+          targetElement.scrollIntoView({ behavior: 'smooth' });
+          
+          // Add highlight effect
+          targetElement.classList.add('highlight-heading');
+          setTimeout(() => {
+            targetElement.classList.remove('highlight-heading');
+          }, 2000);
+        }, 500);
+      }
+    }
+  });
 });
